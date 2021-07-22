@@ -22,6 +22,4 @@ class FPSCalculator(Object):
         except ZeroDivisionError:
             self.fps = inf
 
-        print(self.fps)
-
         self.previous_time = now
