@@ -57,17 +57,19 @@ class Selection(State):
             port = TextInserter(f'{lang("state.host.port")}: {{}}', button_face,
                                 self.mouse_manager, self.keyboard_manager, '31872') \
                 .center_y(self.display).add_y(Selection.PADDING)
-            name = TextInserter(f'{lang("state.host.name")}: {{}}', button_face,
-                                self.mouse_manager, self.keyboard_manager, lang('state.host.default_name')) \
+            game_title = TextInserter(f'{lang("state.host.title")}: {{}}', button_face,
+                                      self.mouse_manager, self.keyboard_manager, lang('state.host.default_name')) \
                 .center_y(self.display).add_y(Selection.PADDING)
             back = TextButton(lang('state.host.back'), button_face, lambda: self.state_manager.state_to('title'),
                               self.mouse_manager) \
                 .center_y(self.display).add_y(Selection.PADDING)
-            start = TextButton(lang('state.host.start'), button_face, lambda: None, self.mouse_manager) \
+            start = TextButton(lang('state.host.start'), button_face,
+                               lambda: self.state_manager.state_to('host_game', game_title.string),
+                               self.mouse_manager) \
                 .center_y(self.display).add_y(Selection.PADDING)
 
             self.reactables.add(port)
-            self.reactables.add(name)
+            self.reactables.add(game_title)
             self.reactables.add(back)
             self.reactables.add(start)
 

@@ -4,6 +4,7 @@ from display import Display
 from manager import MouseManager, KeyboardManager
 from object import FPSCalculator
 from state import Selection
+from state.game import Game
 
 
 class StateManager:
@@ -17,13 +18,21 @@ class StateManager:
         self.keyboard_manager = keyboard_manager
         self.shutdown = shutdown
 
-    def state_to(self, state: str):
+    def state_to(self, state: str, *args):
+        """
+        When ``state`` is ..., args is ...
+
+        * ``host_game``, [title: str]
+        """
+
         if state == 'title':
             self.state = Selection('title', self.display, self, self.fps_calculator, self.mouse_manager,
                                    self.keyboard_manager, self.shutdown)
-        if state == 'host':
+        elif state == 'host':
             self.state = Selection('host', self.display, self, self.fps_calculator, self.mouse_manager,
                                    self.keyboard_manager)
+        elif state == 'host_game':
+            self.state = Game(args[0], self.display, self.mouse_manager, self)
 
     def set_state(self, state):
         self.state = state

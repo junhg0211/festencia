@@ -10,7 +10,7 @@
     "host": {
       "title": "호스트",
       "port": "포트",
-      "name": "방제",
+      "title": "방제",
       "back": "뒤로 가기",
       "default_name": "페스텐시아드",
       "start": "시작"
