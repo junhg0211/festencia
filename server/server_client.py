@@ -56,7 +56,7 @@ class ServerClient:
                 c_time = time()
                 Log.server(f'{self}. SEND {(b_time - a_time) * 1000:.1f}ms, '
                            f'RECV {(c_time - b_time) * 1000:.1f}ms, '
-                           f'PING {(c_time - a_time) * 1000: .1f} ms')
+                           f'PING {(c_time - a_time) * 1000:.1f} ms')
             elif tokens[0] == 'HOST':
                 if self.server.host is None:
                     self.server.host = self
@@ -121,4 +121,16 @@ class ServerClient:
 
     def quit(self):
         self.connected = False
-        # todo things that when client quitted
+        halt = False
+        if self in self.server.host:
+            self.server.host = None
+            halt = True
+        elif self in self.server.joiner:
+            self.server.joiner = None
+            halt = True
+        else:
+            if self in self.server.spectators:
+                self.server.spectators.remove(self)
+
+        if halt:
+            self.server.announce('ANNOUNCE halte')
