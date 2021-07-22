@@ -115,9 +115,9 @@ class ServerClient:
                     self.server.announce(f'JPOS {x} {y}')
             elif tokens[0] == 'CLICK':
                 if self == self.server.host:
-                    self.server.host_click()
+                    self.server.game.host_click()
                 elif self == self.server.joiner:
-                    self.server.joiner_click()
+                    self.server.game.joiner_click()
 
     def quit(self):
         self.connected = False

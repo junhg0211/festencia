@@ -2,7 +2,7 @@ from socket import socket
 from time import time
 from typing import Optional, List
 
-from server import ServerClient
+from server import ServerClient, ServerGame
 
 
 class Server:
@@ -17,15 +17,7 @@ class Server:
         self.joiner: Optional[ServerClient] = None
         self.spectators: List[ServerClient] = list()
 
-        self.host_x = 0
-        self.host_y = 0
-        self.joiner_x = 20
-        self.joiner_y = 11
-
-        self.title = ''
-
-        self.assaut = 1
-        self.time = 180.0
+        self.game = ServerGame(self)
 
     def announce(self, message: str):
         if self.host:
@@ -36,13 +28,7 @@ class Server:
             spectator.send(message)
 
     def get_anchor_time(self):
-        return time(), self.time
-
-    def host_click(self):
-        pass  # todo when host clicked
-
-    def joiner_click(self):
-        pass  # todo when joiner clicked
+        return time(), self.game.time
 
     def start(self):
         self.s.bind(('', self.port))
