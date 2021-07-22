@@ -1,0 +1,15 @@
+{
+  "title": "Festencia",
+  "version": "0_dev",
+  "font": {
+    "pretendard-regular": "./res/font/Pretendard-Regular.otf",
+    "pretendard-bold": "./res/font/Pretendard-Bold.otf"
+  },
+  "color": {
+    "black": [25, 25, 30],
+    "white": [247, 247, 249],
+    "red": [204, 131, 131],
+    "green": [131, 204, 131],
+    "blue": [131, 131, 204]
+  }
+}

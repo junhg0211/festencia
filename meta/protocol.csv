@@ -1,0 +1,35 @@
+Direction,Header,Argument 1,Argument 2,Argument 3,Chained,Description,Implementation of Receiving
+<-,PING,message: str!,,,PONG,반응 요청,YES
+->,PONG,message: str!,,,,반응 전송. <-PING의 대답,NO
+->,PING,요청 생성 시각: time: float,,,PONG,반응속도 확인 요청,NO
+<-,PONG,요청 생성 시각: a_time: float,b_time: float,,,반응속도 확인 전송,YES
+<-,HOST,호스트 이름: host: str!,,,"HOSTOK, HOSTNO",게임 호스트로 참가 요청,YES
+->,HOSTOK,,,,,게임 호스트로 참가 수락,NO
+->,HOSTNO,,,,,게임 호스트로 참가 거절,NO
+<-,SETTITLE,title: str!,,,,게임 타이틀 설정,YES
+<-,JOIN,참가자 이름: name: str!,,,"JOINOK, JOINNO",게임 참가자로 참여 요청,NO
+->,JOINOK,게임 이름: title: str!,,,,게임 참가자 참여 수락,NO
+->,JOINNO,,,,,게임 참가자 참여 거절,NO
+<-,QUIT,,,,,접속 종료,NO
+<-,MESSAGE,name: str: base64,content: str!,,MESSAGE,메시지 요청,NO
+->,MESSAGE,name: str: base64,content: str!,,,메시지 전달,NO
+<-,SPEC,관전자 이름: name: str!,,,SPECOK,게임 관전자로 참여 요청,NO
+->,SPECOK,,,,,게임 관전자로 참여 수락,NO
+<-,TIME,,,,,남은 시간 전송 요청,NO
+->,TIME,time: float,,,,남은 시간 전송,NO
+<-,HOSTNAME,,,,,호스트 이름 전송 요청,NO
+->,HOSTNAME,name: str!,,,,호스트 이름 전송,NO
+<-,JOINNAME,,,,,참여자 이름 전송 요청,NO
+->,JOINNAME,name: str!,,,,참여자 이름 전송,NO
+<-,SPECNAME,,,,,관전자 이름 전송 요청,NO
+->,SPECNAME,names: str!,,,,관전자 이름 목록 전송. csv,NO
+<-,ASSA,,,,,아쏘 정보 전송 요청,NO
+->,ASSA,assaut: int,,,,아쏘 정보 전송,NO
+<-,TIME,,,,,시간 정보 전송 요청,NO
+->,TIME,anchor: float,time: float,,,시간 정보 전송,NO
+->,ANNOUNCE,sign: (engarde|pret|allez|halte),,,,게임 신호 전송,NO
+<-,POS,x: float,y: float,,,위치 정보 전송,NO
+->,HPOS,x: float,y: float,,,호스트 위치 정보 전송,NO
+->,JPOS,x: float,y: float,,,참여자 위치 정보 전송,NO
+<-,CLICK,,,,,클릭 정보 전송,NO
+->,CLICK,host: bool,x: float,y: float,,클릭 정보 전달,NO
