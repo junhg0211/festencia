@@ -1,7 +1,9 @@
-from math import inf
+from math import inf, pi
 
 from pygame import Surface
 from pygame.font import Font
+
+radian = 180 / pi
 
 
 def limit(value: float, m: float, x: float) -> float:
@@ -25,7 +27,7 @@ def animate(value: int, target: int, fps) -> int:
     return value
 
 
-def interpolate(value, min_, max_, from_, to):
+def linear(value, min_, max_, from_, to):
     return (value - min_) / (max_ - min_) * (to - from_) + from_
 
 
