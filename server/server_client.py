@@ -42,7 +42,6 @@ class ServerClient:
         while self.connected:
             recv = self.recv()
             if not recv:
-                self.connected = False
                 self.quit()
                 break
 
@@ -68,6 +67,58 @@ class ServerClient:
             elif tokens[0] == 'SETTITLE':
                 if self.server.host == self:
                     self.server.title = ' '.join(tokens[1:])
+            elif tokens[0] == 'JOIN':
+                if self.server.joiner is None:
+                    self.server.joiner = self
+                    self.name = ' '.join(tokens[1:])
+                    self.send('JOINOK')
+                else:
+                    self.send('JOINNO')
+            elif tokens[0] == 'QUIT':
+                self.quit()
+            elif tokens[0] == 'MESSAGE':
+                self.server.announce(recv)
+            elif tokens[0] == 'SPEC':
+                self.server.spectators.append(self)
+                self.send('SPECOK')
+            elif tokens[0] == 'HOSTNAME':
+                if self.server.host:
+                    self.send(f'HOSTNAME {self.server.host.name}')
+                else:
+                    self.send('NOHOST')
+            elif tokens[0] == 'JOINNAME':
+                if self.server.joiner:
+                    self.send(f'JOINNAME {self.server.joiner.name}')
+                else:
+                    self.send('NOJOIN')
+            elif tokens[0] == 'SPECNAME':
+                names = list()
+                for spectator in self.server.spectators:
+                    names.append(spectator.name)
+                names = ','.join(names)
+                self.send(f'SPECNAME {names}')
+            elif tokens[0] == 'ASSA':
+                self.send(f'ASSA {self.server.assaut}')
+            elif tokens[0] == 'TIME':
+                anchor, time_ = self.server.get_anchor_time()
+                self.send(f'TIME {anchor} {time_}')
+            elif tokens[0] == 'POS':
+                x = float(tokens[1])
+                y = float(tokens[2])
+                if self == self.server.host:
+                    self.server.host_x = x
+                    self.server.host_y = y
+                    self.server.announce(f'HPOS {x} {y}')
+                elif self == self.server.joiner:
+                    self.server.joiner_x = x
+                    self.server.joiner_y = y
+                    self.server.announce(f'JPOS {x} {y}')
+            elif tokens[0] == 'CLICK':
+                if self == self.server.host:
+                    self.server.host_click()
+                elif self == self.server.joiner:
+                    self.server.joiner_click()
 
     def quit(self):
-        pass  # todo things that when client quitted
+        self.connected = False
+        # todo things that when client quitted
