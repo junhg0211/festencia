@@ -36,7 +36,6 @@ class Dualcircles(Object):
         self.arc_x2 = 0
         self.arc_y1 = 0
         self.arc_y2 = 0
-        self.arc_condition = False
         self.arc_vertices = list()
         self.arc_density = 24
 
@@ -63,53 +62,52 @@ class Dualcircles(Object):
             self.y = animate(self.y, self.target_y, self.fps_calculator.fps)
             self.y2 = animate(self.y2, self.target_y2, self.fps_calculator.fps)
 
-        self.arc_condition = hypot(self.x - self.x2, self.y - self.y2) < self.radius * 2 and self.y != self.y2
+    def tick_arc(self):
+        a = self.x**2 - 2*self.x*self.x2 + self.x2**2 + self.y**2 - 2*self.y*self.y2 + self.y2**2
+        b = -self.x**3 + self.x**2*self.x2 + self.x*self.x2**2 - self.x*self.y**2 + 2*self.x*self.y*self.y2 \
+            - self.x*self.y2**2 - self.x2**3 - self.x2*self.y**2 + 2*self.x2*self.y*self.y2 - self.x2*self.y2**2
+        d = -(self.y-self.y2)**2 * a * (a - 4*self.radius**2)
 
-        if self.arc_condition:
-            a = self.x**2 - 2*self.x*self.x2 + self.x2**2 + self.y**2 - 2*self.y*self.y2 + self.y2**2
-            b = -self.x**3 + self.x**2*self.x2 + self.x*self.x2**2 - self.x*self.y**2 + 2*self.x*self.y*self.y2 \
-                - self.x*self.y2**2 - self.x2**3 - self.x2*self.y**2 + 2*self.x2*self.y*self.y2 - self.x2*self.y2**2
-            d = -(self.y-self.y2)**2 * a * (a - 4*self.radius**2)
+        self.arc_x1 = (-b + sqrt(d)) / (2 * a)
+        self.arc_x2 = (-b - sqrt(d)) / (2 * a)
 
-            self.arc_x1 = (-b + sqrt(d)) / (2 * a)
-            self.arc_x2 = (-b - sqrt(d)) / (2 * a)
+        self.arc_y1 = self.arc_y(self.arc_x1)
+        self.arc_y2 = self.arc_y(self.arc_x2)
 
-            self.arc_y1 = self.arc_y(self.arc_x1)
-            self.arc_y2 = self.arc_y(self.arc_x2)
+        # a - x
+        theta_1 = atan2(self.arc_y2 - self.y, self.arc_x2 - self.x)
+        theta_2 = atan2(self.arc_y1 - self.y, self.arc_x1 - self.x)
+        theta_3 = atan2(self.arc_y1 - self.y2, self.arc_x1 - self.x2)
+        theta_4 = atan2(self.arc_y2 - self.y2, self.arc_x2 - self.x2)
 
-            # a - x
-            theta_1 = atan2(self.arc_y2 - self.y, self.arc_x2 - self.x)
-            theta_2 = atan2(self.arc_y1 - self.y, self.arc_x1 - self.x)
-            theta_3 = atan2(self.arc_y1 - self.y2, self.arc_x1 - self.x2)
-            theta_4 = atan2(self.arc_y2 - self.y2, self.arc_x2 - self.x2)
+        theta_1, theta_2 = min(theta_1, theta_2), max(theta_1, theta_2)
+        theta_3, theta_4 = min(theta_3, theta_4), max(theta_3, theta_4)
 
-            theta_1, theta_2 = min(theta_1, theta_2), max(theta_1, theta_2)
-            theta_3, theta_4 = min(theta_3, theta_4), max(theta_3, theta_4)
+        if theta_2 - theta_1 > pi:
+            theta_1, theta_2 = theta_2 - tau, theta_1
+        if theta_4 - theta_3 > pi:
+            theta_3, theta_4 = theta_4 - tau, theta_3
 
-            if theta_2 - theta_1 > pi:
-                theta_1, theta_2 = theta_2 - tau, theta_1
-            if theta_4 - theta_3 > pi:
-                theta_3, theta_4 = theta_4 - tau, theta_3
-
-            self.arc_vertices.clear()
-            radius = self.radius + 1
-            # noinspection DuplicatedCode
-            for theta in map(lambda x: linear(x, 0, self.arc_density, theta_1, theta_2), range(self.arc_density)):
-                dx = cos(theta) * radius
-                dy = sin(theta) * radius
-                self.arc_vertices.append((self.x + dx, self.y + dy))
-            # noinspection DuplicatedCode
-            for theta in map(lambda x: linear(x, 0, self.arc_density, theta_3, theta_4), range(self.arc_density)):
-                dx = cos(theta) * radius
-                dy = sin(theta) * radius
-                self.arc_vertices.append((self.x2 + dx, self.y2 + dy))
+        self.arc_vertices.clear()
+        radius = self.radius + 1
+        # noinspection DuplicatedCode
+        for theta in map(lambda x: linear(x, 0, self.arc_density, theta_1, theta_2), range(self.arc_density)):
+            dx = cos(theta) * radius
+            dy = sin(theta) * radius
+            self.arc_vertices.append((self.x + dx, self.y + dy))
+        # noinspection DuplicatedCode
+        for theta in map(lambda x: linear(x, 0, self.arc_density, theta_3, theta_4), range(self.arc_density)):
+            dx = cos(theta) * radius
+            dy = sin(theta) * radius
+            self.arc_vertices.append((self.x2 + dx, self.y2 + dy))
 
     # noinspection DuplicatedCode
     def render(self, display: Display):
         draw.circle(display.display, RED, (int(self.x), int(self.y)), self.radius)
         draw.circle(display.display, GREEN, (int(self.x2), int(self.y2)), self.radius)
 
-        if self.arc_condition:
+        if hypot(self.x - self.x2, self.y - self.y2) < self.radius * 2 and self.y != self.y2:
+            self.tick_arc()
             gfxdraw.filled_polygon(display.display, self.arc_vertices, BLUE)
 
         draw.aaline(display.display, BLACK, (self.x - 10, self.y - 10), (self.x + 10, self.y + 10))

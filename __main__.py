@@ -7,7 +7,6 @@ from handler import Quit
 from manager import ObjectManager, HandlerManager, MouseManager, KeyboardManager, StateManager
 from object import FPSCalculator
 from state import Selection
-from state.game import Game
 
 pygame_init()
 
@@ -30,8 +29,6 @@ class Main:
         self.state_manager = StateManager(self.display, fps_calculator, self.mouse_manager, keyboard_manager,
                                           self.shutdown)
         self.state_manager.set_state(
-            # Game('제5회 슈텔로 페스텐시아드 8강, 스치 vs. 네오',
-            #      self.display, self.mouse_manager, self.state_manager))
             Selection('title', self.display, self.state_manager, fps_calculator, self.mouse_manager,
                       keyboard_manager, self.shutdown))
 

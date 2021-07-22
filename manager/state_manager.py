@@ -32,7 +32,7 @@ class StateManager:
             self.state = Selection('host', self.display, self, self.fps_calculator, self.mouse_manager,
                                    self.keyboard_manager)
         elif state == 'host_game':
-            self.state = Game(args[0], self.display, self.mouse_manager, self)
+            self.state = Game(args[0], args[1], self.display, self.mouse_manager, self)
 
     def set_state(self, state):
         self.state = state

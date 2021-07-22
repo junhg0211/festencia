@@ -4,22 +4,20 @@ from pygame.transform import rotate
 from const import BLACK, RED, GREEN, PRETENDARD_BOLD, lang
 from display import Display
 from object import Object, Dualcircles
-from util import center, Face
+from util import center, Face, linear
 
 
 class Piste(Object):
+    WIDTH = 20
+    HEIGHT = 11
+    RADIUS = 0.88
+
     def __init__(self, green_name: str, red_name: str, display: Display, x: int = 0, y: int = 0):
         super().__init__(x, y)
         self.display = display
 
         self.width = self.display.width // 7 * 6
         self.height = self.width * 0.55
-
-        """
-        가로 20
-        세로 11
-        반지름 0.88
-        """
 
         self.center_x(self.display).set_y(50)
 
@@ -55,6 +53,14 @@ class Piste(Object):
         self.assaut_x = self.display.width * .3 - self.assaut_surface.get_width()
 
         self.extra_y = self.y + self.height + center(self.lowergap, self.timer_surface.get_height())
+
+    def set_red_pos(self, x: float, y: float):
+        self.dualcircles.x = linear(x, 0, Piste.WIDTH, self.x, self.x + self.width)
+        self.dualcircles.y = linear(y, 0, Piste.HEIGHT, self.y, self.y + self.height)
+
+    def set_green_pos(self, x: float, y: float):
+        self.dualcircles.x2 = linear(x, 0, Piste.WIDTH, self.x, self.x + self.width)
+        self.dualcircles.y2 = linear(y, 0, Piste.HEIGHT, self.y, self.y + self.height)
 
     def render_timer(self):
         minute = self.time_left // 60

@@ -1,3 +1,4 @@
+from pygame import mouse
 from pygame.constants import MOUSEBUTTONDOWN, MOUSEBUTTONUP, MOUSEMOTION
 from pygame.event import Event
 
@@ -19,6 +20,11 @@ class MouseManager(Handler):
         self.right_end = False
 
         self.x, self.y = 0, 0
+
+    def set_pos(self, x: float, y: float):
+        mouse.set_pos(x, y)
+        self.x = x
+        self.y = y
 
     def handle(self, event: Event):
         if event.type == MOUSEBUTTONDOWN:
