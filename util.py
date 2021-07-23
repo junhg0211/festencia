@@ -6,7 +6,7 @@ from pygame.font import Font
 radian = 180 / pi
 
 
-def limit(value: float, m: float, x: float) -> float:
+def limit(value: float, m: float, x: float):
     return max(min(value, x), m)
 
 
@@ -68,6 +68,10 @@ class Spacer:
 
 
 class Log:
+    @staticmethod
+    def debug(message):
+        print(f'[DEBUG] {message}')
+
     @staticmethod
     def server(message):
         print(f'[SERVER] {message}')

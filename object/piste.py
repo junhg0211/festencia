@@ -5,7 +5,7 @@ from pygame.transform import rotate
 
 from const import BLACK, RED, GREEN, PRETENDARD_BOLD, lang
 from display import Display
-from object import Object, Dualcircles
+from object import Object, Dualcircles, Text
 from util import center, Face, linear
 
 
@@ -35,7 +35,7 @@ class Piste(Object):
     HEIGHT = 11
     RADIUS = 0.88
 
-    def __init__(self, green_name: str, red_name: str, display: Display, x: int = 0, y: int = 0):
+    def __init__(self, green_name: str, red_name: str, title: str, display: Display, x: int = 0, y: int = 0):
         super().__init__(x, y)
         self.display = display
 
@@ -63,7 +63,10 @@ class Piste(Object):
         self.red_name_surface = None
         self.set_joiner_name(red_name)
 
-        self.announcement = True
+        title_face = Face(PRETENDARD_BOLD, 24, BLACK)
+        self.title = Text(title, title_face, y=10).center_x(self.display)
+
+        self.announcement = False
         self.announcement_surface = self.big_face.render(lang('piste.engarde'))
         self.announcement_x = center(self.display.width, self.announcement_surface.get_width())
         self.announcement_y = self.y + self.height + center(self.lowergap, self.announcement_surface.get_height())
@@ -105,6 +108,10 @@ class Piste(Object):
         self.assaut = assaut
         self.assaut_surface = self.small_face.render(f'{self.assaut}/3')
         self.assaut_x = self.display.width * .3 - self.assaut_surface.get_width()
+        return self
+
+    def set_title(self, title: str) -> 'Piste':
+        self.title.set_text(title).center_x(self.display)
         return self
 
     def set_host_name(self, green_name: str) -> 'Piste':
@@ -166,6 +173,8 @@ class Piste(Object):
         draw.rect(display.display, RED, ((self.x + self.width, 0), (self.x, 30)))
         display.display.blit(self.red_surface, (self.red_score_x, 30))
         display.display.blit(self.red_name_surface, (self.green_name_x + self.x + self.width, 190))
+
+        self.title.render(display)
 
         if self.announcement:
             display.display.blit(

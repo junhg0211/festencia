@@ -1,3 +1,5 @@
+from socket import gethostbyname, getfqdn
+
 from const import PRETENDARD_BOLD, BLACK, lang
 from display import Display
 from manager import MouseManager, ObjectManager, KeyboardManager
@@ -71,7 +73,9 @@ class Selection(State):
                               self.mouse_manager) \
                 .center_y(self.display).add_y(Selection.PADDING)
             start = TextButton(lang('state.host.start'), button_face,
-                               lambda: self.state_manager.state_to('host_game', game_title.string, settings['name']),
+                               lambda: self.state_manager.state_to('host_game',
+                                                                   game_title.string, gethostbyname(getfqdn()),
+                                                                   int(port.string), settings['name']),
                                self.mouse_manager) \
                 .center_y(self.display).add_y(Selection.PADDING)
 

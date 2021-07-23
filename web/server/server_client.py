@@ -61,12 +61,13 @@ class ServerClient:
                 if self.server.host is None:
                     self.server.host = self
                     self.name = ' '.join(tokens[1:])
-                    self.send('HOSTOK')
+                    self.send(f'HOSTOK {self.name}')
                 else:
                     self.send('HOSTNO')
             elif tokens[0] == 'SETTITLE':
                 if self.server.host == self:
                     self.server.title = ' '.join(tokens[1:])
+                self.server.announce(f'TITLE {self.server.title}')
             elif tokens[0] == 'JOIN':
                 if self.server.joiner is None:
                     self.server.joiner = self
@@ -120,17 +121,13 @@ class ServerClient:
                     self.server.game.joiner_click()
 
     def quit(self):
-        self.connected = False
-        halt = False
-        if self in self.server.host:
-            self.server.host = None
-            halt = True
-        elif self in self.server.joiner:
-            self.server.joiner = None
-            halt = True
-        else:
-            if self in self.server.spectators:
+        if self.connected:
+            self.connected = False
+            if self == self.server.host:
+                self.server.host = None
+                self.server.announce('ANNOUNCE halte')
+            elif self == self.server.joiner:
+                self.server.joiner = None
+                self.server.announce('ANNOUNCE halte')
+            elif self in self.server.spectators:
                 self.server.spectators.remove(self)
-
-        if halt:
-            self.server.announce('ANNOUNCE halte')

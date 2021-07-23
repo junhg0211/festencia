@@ -35,11 +35,27 @@ class Server:
         self.s.bind(('', self.port))
         self.s.listen()
         self.running = True
-        Log.server('Server started')
+        Log.server(f'Server started at {self.host}:{self.port}')
         self.run()
 
     def run(self):
         while self.running:
-            conn, addr = self.s.accept()
-            client = ServerClient(conn, *addr)
+            try:
+                conn, addr = self.s.accept()
+            except OSError:
+                break
+            client = ServerClient(self, conn, *addr)
             client.handle()
+        self.shutdown()
+
+    def shutdown(self):
+        if self.running:
+            Log.server('Shutting down...')
+            self.running = False
+            if self.host is not None:
+                self.host.quit()
+            if self.joiner is not None:
+                self.joiner.quit()
+            for spectator in self.spectators:
+                spectator.quit()
+            self.s.close()

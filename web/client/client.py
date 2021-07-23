@@ -21,8 +21,11 @@ class Client:
         self.thread = Thread(target=self.run)
         self.thread.setDaemon(True)
 
-        self.connect()
-        self.handle()
+    def send_host(self, name: str):
+        self.send(f'HOST {name}')
+
+    def send_set_title(self, title: str):
+        self.send(f'SETTITLE {title}')
 
     def connect(self):
         self.s.connect((self.host, self.port))
@@ -40,6 +43,10 @@ class Client:
     def send(self, value: str):
         self.s.send(value.encode())
         Log.client(f'-> {value}')
+
+    def start(self):
+        self.connect()
+        self.handle()
 
     def run(self):
         Log.client(f'{self.thread.name} started.')
@@ -86,6 +93,17 @@ class Client:
                 x = linear(float(tokens[1]), 0, Piste.WIDTH, self.piste.x, self.piste.x + self.piste.width)
                 y = linear(float(tokens[2]), 0, Piste.HEIGHT, self.piste.y, self.piste.y + self.piste.height)
                 self.piste.click(x, y, GREEN if host else RED)
+            elif tokens[0] == 'HOSTOK':
+                name = ' '.join(tokens[1:])
+                self.piste.set_host_name(name)
+            elif tokens[0] == 'TITLE':
+                title = ' '.join(tokens[1:])
+                self.piste.set_title(title)
 
     def quit(self):
-        pass  # todo things when server closed
+        # todo things when server closed
+        if self.running:
+            Log.client('Quit')
+            self.send('QUIT')
+            self.s.close()
+            self.running = False

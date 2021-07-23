@@ -1,12 +1,14 @@
-from pygame import init as pygame_init
+from pygame import init as pygame_init, KEYDOWN, K_MINUS
 from pygame.event import get as event_get
 
+import globals
 from const import CAPTION, WHITE, ICON
 from display import Display
 from handler import Quit
 from manager import ObjectManager, HandlerManager, MouseManager, KeyboardManager, StateManager
 from object import FPSCalculator
 from state import Selection
+from util import Log
 
 pygame_init()
 
@@ -34,10 +36,22 @@ class Main:
 
     def shutdown(self):
         self.running = False
+        if 'server' in globals.data:
+            globals.data['server'].shutdown()
+            del globals.data['server']
+            self.state_manager.state_to('title')
+            Log.debug('HALTED')
 
     def handle(self):
         for event in event_get():
             self.handler_manager.handle(event)
+            if event.type == KEYDOWN:
+                if event.key == K_MINUS:
+                    if 'server' in globals.data:
+                        globals.data['server'].shutdown()
+                        del globals.data['server']
+                        self.state_manager.state_to('title')
+                        Log.debug('HALTED')
 
     def tick(self):
         self.state_manager.tick()

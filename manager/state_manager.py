@@ -22,7 +22,7 @@ class StateManager:
         """
         When ``state`` is ..., args is ...
 
-        * ``host_game``, [title: str]
+        * ``host_game``, [title: str, host: str, port: int, name: str]
         * ``error``, [name: str, content: str]
         """
 
@@ -33,7 +33,8 @@ class StateManager:
             self.state = Selection('host', self.display, self, self.fps_calculator, self.mouse_manager,
                                    self.keyboard_manager)
         elif state == 'host_game':
-            self.state = Game(args[0], args[1], self.display, self.mouse_manager, self)
+            self.state = Game(Game.HOST, self.display, self.mouse_manager, self,
+                              title=args[0], host=args[1], port=args[2], name=args[3])
         elif state == 'error':
             self.state = Selection('error', self.display, self, self.fps_calculator, self.mouse_manager,
                                    self.keyboard_manager, args[0], args[1])
