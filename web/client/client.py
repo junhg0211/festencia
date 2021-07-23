@@ -2,8 +2,9 @@ from socket import socket
 from threading import Thread
 from time import time
 
+from const import GREEN, RED
 from object.piste import Piste
-from util import Log
+from util import Log, linear
 
 
 class Client:
@@ -53,6 +54,9 @@ class Client:
             if tokens[0] == 'PING':
                 a_time = tokens[1]
                 self.send(f'PONG {a_time} {time()}')
+            elif tokens[0] == 'PONG':
+                message = ' '.join(tokens[1:])
+                Log.client(f'PONG {message}')
             elif tokens[0] == 'HOSTNAME':
                 name = ' '.join(tokens[1:])
                 self.piste.set_host_name(name)
@@ -77,6 +81,11 @@ class Client:
                 x = float(tokens[1])
                 y = float(tokens[2])
                 self.piste.dualcircles.set_x2(x).set_y2(y)
+            elif tokens[0] == 'CLICK':
+                host = tokens[0] == 'True'
+                x = linear(float(tokens[1]), 0, Piste.WIDTH, self.piste.x, self.piste.x + self.piste.width)
+                y = linear(float(tokens[2]), 0, Piste.HEIGHT, self.piste.y, self.piste.y + self.piste.height)
+                self.piste.click(x, y, GREEN if host else RED)
 
     def quit(self):
         pass  # todo things when server closed
