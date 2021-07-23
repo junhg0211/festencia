@@ -5,6 +5,7 @@
     "pretendard-regular": "./res/font/Pretendard-Regular.otf",
     "pretendard-bold": "./res/font/Pretendard-Bold.otf"
   },
+  "icon": "./res/image/icon.png",
   "color": {
     "black": [25, 25, 30],
     "white": [247, 247, 249],

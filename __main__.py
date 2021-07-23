@@ -1,7 +1,7 @@
 from pygame import init as pygame_init
 from pygame.event import get as event_get
 
-from const import CAPTION, WHITE
+from const import CAPTION, WHITE, ICON
 from display import Display
 from handler import Quit
 from manager import ObjectManager, HandlerManager, MouseManager, KeyboardManager, StateManager
@@ -13,7 +13,7 @@ pygame_init()
 
 class Main:
     def __init__(self):
-        self.display = Display(1920, 1080, CAPTION)
+        self.display = Display(1920, 1080, CAPTION, ICON)
 
         self.running = True
 

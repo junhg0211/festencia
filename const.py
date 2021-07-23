@@ -18,6 +18,7 @@ def lang(path: str) -> str:
 TITLE = _const['title']
 VERSION = _const['version']
 CAPTION = TITLE + ' ' + VERSION
+ICON = _const['icon']
 
 _color = _const['color']
 BLACK = _color['black']
