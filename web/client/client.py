@@ -66,10 +66,10 @@ class Client:
                 Log.client(f'PONG {message}')
             elif tokens[0] == 'HOSTNAME':
                 name = ' '.join(tokens[1:])
-                self.piste.set_host_name(name)
+                self.piste.set_green_name(name)
             elif tokens[0] == 'JOINNAME':
                 name = ' '.join(tokens[1:])
-                self.piste.set_joiner_name(name)
+                self.piste.set_red_name(name)
             elif tokens[0] == 'ASSA':
                 assaut = int(tokens[1])
                 self.piste.update_assaut(assaut)
@@ -95,7 +95,7 @@ class Client:
                 self.piste.click(x, y, GREEN if host else RED)
             elif tokens[0] == 'HOSTOK':
                 name = ' '.join(tokens[1:])
-                self.piste.set_host_name(name)
+                self.piste.set_green_name(name)
             elif tokens[0] == 'TITLE':
                 title = ' '.join(tokens[1:])
                 self.piste.set_title(title)

@@ -55,13 +55,13 @@ class Piste(Object):
         self.green_score_x = center(self.x, self.green_surface.get_width())
         self.green_name_surface = None
         self.green_name_x = center(self.x, 64) - 5
-        self.set_host_name(green_name)
+        self.set_green_name(green_name)
 
         self.red_score = 0
         self.red_surface = self.big_face.render(str(self.red_score))
         self.red_score_x = center(self.x, self.red_surface.get_width()) + self.width + self.x
         self.red_name_surface = None
-        self.set_joiner_name(red_name)
+        self.set_red_name(red_name)
 
         title_face = Face(PRETENDARD_BOLD, 24, BLACK)
         self.title = Text(title, title_face, y=10).center_x(self.display)
@@ -89,15 +89,6 @@ class Piste(Object):
         self.clicks[now] = Click(x, y, color, self.dualcircles.arc_vertices.copy(), now, self.clicks)
         return self
 
-    def set_announcement(self, sign) -> 'Piste':
-        self.announcement_surface = self.big_face.render(lang(f'piste.{sign}'))
-        self.announcement_x = center(self.display.width, self.announcement_surface.get_width())
-        return self
-
-    def set_time_left(self, time_left) -> 'Piste':
-        self.time_left = time_left
-        return self.render_timer()
-
     def render_timer(self) -> 'Piste':
         minute = int(self.time_left) // 60
         second = int(self.time_left) % 60
@@ -110,15 +101,28 @@ class Piste(Object):
         self.assaut_x = self.display.width * .3 - self.assaut_surface.get_width()
         return self
 
+    def center_x(self, display: Display) -> 'Piste':
+        self.x = center(display.width, self.width)
+        return self
+
+    def set_announcement(self, sign) -> 'Piste':
+        self.announcement_surface = self.big_face.render(lang(f'piste.{sign}'))
+        self.announcement_x = center(self.display.width, self.announcement_surface.get_width())
+        return self
+
+    def set_time_left(self, time_left) -> 'Piste':
+        self.time_left = time_left
+        return self.render_timer()
+
     def set_title(self, title: str) -> 'Piste':
         self.title.set_text(title).center_x(self.display)
         return self
 
-    def set_host_name(self, green_name: str) -> 'Piste':
+    def set_green_name(self, green_name: str) -> 'Piste':
         self.green_name_surface = rotate(self.small_face.render(green_name), 90)
         return self
 
-    def set_joiner_name(self, red_name: str) -> 'Piste':
+    def set_red_name(self, red_name: str) -> 'Piste':
         self.red_name_surface = rotate(self.small_face.render(red_name), -90)
         return self
 
@@ -150,10 +154,6 @@ class Piste(Object):
 
         self.dualcircles.tick()
         self.render_timer()
-
-    def center_x(self, display: Display) -> 'Piste':
-        self.x = center(display.width, self.width)
-        return self
 
     def render(self, display: Display):
         for click in self.clicks.values():
