@@ -70,4 +70,8 @@ class Spacer:
 class Log:
     @staticmethod
     def server(message):
-        print(message)
+        print(f'[SERVER] {message}')
+
+    @staticmethod
+    def client(message):
+        print(f'[CLIENT] {message}')

@@ -38,6 +38,15 @@ class Dualcircles(Object):
         self.arc_y2 = 0
         self.arc_vertices = list()
         self.arc_density = 24
+        self.arc_condition = False
+
+    def set_x2(self, x: int) -> 'Dualcircles':
+        self.x2 = x
+        return self
+
+    def set_y2(self, y: int) -> 'Dualcircles':
+        self.y2 = y
+        return self
 
     def random_pos(self, display: Display) -> 'Dualcircles':
         if self.fps_calculator:
@@ -61,6 +70,12 @@ class Dualcircles(Object):
             self.x2 = animate(self.x2, self.target_x2, self.fps_calculator.fps)
             self.y = animate(self.y, self.target_y, self.fps_calculator.fps)
             self.y2 = animate(self.y2, self.target_y2, self.fps_calculator.fps)
+
+        self.arc_condition = hypot(self.x - self.x2, self.y - self.y2) < self.radius * 2 and self.y != self.y2
+        if self.arc_condition:
+            self.tick_arc()
+        else:
+            self.arc_vertices.clear()
 
     def tick_arc(self):
         a = self.x**2 - 2*self.x*self.x2 + self.x2**2 + self.y**2 - 2*self.y*self.y2 + self.y2**2
@@ -106,8 +121,7 @@ class Dualcircles(Object):
         draw.circle(display.display, RED, (int(self.x), int(self.y)), self.radius)
         draw.circle(display.display, GREEN, (int(self.x2), int(self.y2)), self.radius)
 
-        if hypot(self.x - self.x2, self.y - self.y2) < self.radius * 2 and self.y != self.y2:
-            self.tick_arc()
+        if self.arc_condition:
             gfxdraw.filled_polygon(display.display, self.arc_vertices, BLUE)
 
         draw.aaline(display.display, BLACK, (self.x - 10, self.y - 10), (self.x + 10, self.y + 10))

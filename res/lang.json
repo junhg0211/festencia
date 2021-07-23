@@ -10,10 +10,13 @@
     "host": {
       "title": "호스트",
       "port": "포트",
-      "title": "방제",
+      "room_title": "방제",
       "back": "뒤로 가기",
-      "default_name": "페스텐시아드",
       "start": "시작"
+    },
+    "error": {
+      "title": "오류",
+      "back": "OK"
     }
   },
   "piste": {

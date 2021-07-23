@@ -1,8 +1,8 @@
-import settings
 from const import PRETENDARD_BOLD, BLACK, lang
 from display import Display
 from manager import MouseManager, ObjectManager, KeyboardManager
 from object import Dualcircles, FPSCalculator, Text, TextButton, TextInserter
+from settings import settings, update
 from state import State
 from util import Face, Spacer, center
 
@@ -10,6 +10,10 @@ from util import Face, Spacer, center
 class Selection(State):
     GAP = 150
     PADDING = 50
+
+    TITLE = 'title'
+    HOST = 'host'
+    ERROR = 'error'
 
     def __init__(self, mode: str, display: Display, state_manager, fps_calculator: FPSCalculator,
                  mouse_manager: MouseManager, keyboard_manager: KeyboardManager, *args):
@@ -36,7 +40,7 @@ class Selection(State):
         self.reactables = ObjectManager()
         self.spacer = None
         title = lang('title')
-        if mode == 'title':
+        if mode == Selection.TITLE:
             host = TextButton(lang('state.title.host'), button_face, lambda: self.state_manager.state_to('host'),
                               self.mouse_manager) \
                 .center_y(self.display).add_y(Selection.PADDING)
@@ -52,20 +56,22 @@ class Selection(State):
             self.reactables.add(spectate)
             self.reactables.add(quit_)
             self.spacer = Spacer(Selection.GAP, *self.reactables.objects)
-        elif mode == 'host':
+
+        elif mode == Selection.HOST:
             title = lang('state.host.title')
 
             port = TextInserter(f'{lang("state.host.port")}: {{}}', button_face,
-                                self.mouse_manager, self.keyboard_manager, '31872') \
+                                self.mouse_manager, self.keyboard_manager, settings['port']) \
                 .center_y(self.display).add_y(Selection.PADDING)
-            game_title = TextInserter(f'{lang("state.host.title")}: {{}}', button_face,
-                                      self.mouse_manager, self.keyboard_manager, lang('state.host.default_name')) \
+            game_title = TextInserter(f'{lang("state.host.room_title")}: {{}}', button_face,
+                                      self.mouse_manager, self.keyboard_manager, settings['room_title']) \
                 .center_y(self.display).add_y(Selection.PADDING)
+            game_title.ender = lambda: update('room_title', game_title.string)
             back = TextButton(lang('state.host.back'), button_face, lambda: self.state_manager.state_to('title'),
                               self.mouse_manager) \
                 .center_y(self.display).add_y(Selection.PADDING)
             start = TextButton(lang('state.host.start'), button_face,
-                               lambda: self.state_manager.state_to('host_game', game_title.string, settings.name),
+                               lambda: self.state_manager.state_to('host_game', game_title.string, settings['name']),
                                self.mouse_manager) \
                 .center_y(self.display).add_y(Selection.PADDING)
 
@@ -73,6 +79,19 @@ class Selection(State):
             self.reactables.add(game_title)
             self.reactables.add(back)
             self.reactables.add(start)
+
+            self.spacer = Spacer(Selection.GAP, *self.reactables.objects)
+
+        elif mode == Selection.ERROR:
+            title = lang('state.error.title')
+
+            content = Text(args[0], button_face).center_y(self.display).add_y(Selection.PADDING)
+            back = TextButton(lang('state.error.back'), button_face, lambda: self.state_manager.state_to('title'),
+                              self.mouse_manager) \
+                .center_y(self.display).add_y(Selection.PADDING)
+
+            self.reactables.add(content)
+            self.reactables.add(back)
 
             self.spacer = Spacer(Selection.GAP, *self.reactables.objects)
 

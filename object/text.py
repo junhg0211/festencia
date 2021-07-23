@@ -1,4 +1,5 @@
 from collections import Callable
+from typing import Optional
 
 from clipboard import paste
 from pygame import draw
@@ -67,8 +68,10 @@ class TextButton(Text):
 
 class TextInserter(TextButton):
     def __init__(self, text_template: str, face: Face, mouse_manager: MouseManager,
-                 keyboard_manager: KeyboardManager, default_text: str = '', x: int = 0, y: int = 0):
+                 keyboard_manager: KeyboardManager, default_text: str = '', ender: Optional[Callable] = None,
+                 x: int = 0, y: int = 0):
         super().__init__(text_template.format(default_text), face, self.insert, mouse_manager, x, y)
+        self.ender = ender
 
         self.text_template = text_template
 
@@ -100,6 +103,8 @@ class TextInserter(TextButton):
                     self.string = self.string[:-1]
             if self.mouse_manager.left_start and not self.mouse_in():
                 self.inserting = False
+                if self.ender is not None:
+                    self.ender()
             self.set_text(self.text_template.format(self.string))
 
     def render(self, display: Display):

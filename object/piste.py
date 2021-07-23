@@ -1,10 +1,33 @@
-from pygame import draw
+from time import time
+
+from pygame import draw, gfxdraw
 from pygame.transform import rotate
 
 from const import BLACK, RED, GREEN, PRETENDARD_BOLD, lang
 from display import Display
 from object import Object, Dualcircles
 from util import center, Face, linear
+
+
+class Click(Object):
+    DURATION = 2
+
+    def __init__(self, x: int, y: int, color: tuple, intersection: list, time_: float, dict_: dict):
+        super().__init__(x, y)
+        self.color = color
+        self.intersection = intersection
+        self.time = time_
+        self.dict = dict_
+
+    def tick(self):
+        if self.time + Click.DURATION < time():
+            del self.dict[self.time]
+
+    def render(self, display: Display):
+        draw.aaline(display.display, self.color, (self.x - 10, self.y - 10), (self.x + 10, self.y + 10))
+        draw.aaline(display.display, self.color, (self.x - 10, self.y + 10), (self.x + 10, self.y - 10))
+        if self.intersection:
+            gfxdraw.polygon(display.display, self.intersection, self.color)
 
 
 class Piste(Object):
@@ -30,56 +53,95 @@ class Piste(Object):
         self.green_score = 0
         self.green_surface = self.big_face.render(str(self.green_score))
         self.green_score_x = center(self.x, self.green_surface.get_width())
-        self.green_name_surface = rotate(self.small_face.render(green_name), 90)
+        self.green_name_surface = None
         self.green_name_x = center(self.x, 64) - 5
+        self.set_host_name(green_name)
 
         self.red_score = 0
         self.red_surface = self.big_face.render(str(self.red_score))
         self.red_score_x = center(self.x, self.red_surface.get_width()) + self.width + self.x
-        self.red_name_surface = self.small_face.render(red_name)
-        self.red_name_surface = rotate(self.small_face.render(red_name), -90)
+        self.red_name_surface = None
+        self.set_joiner_name(red_name)
 
         self.announcement = True
         self.announcement_surface = self.big_face.render(lang('piste.engarde'))
         self.announcement_x = center(self.display.width, self.announcement_surface.get_width())
         self.announcement_y = self.y + self.height + center(self.lowergap, self.announcement_surface.get_height())
 
-        self.time_left = 147
-        self.timer_surface = self.small_face.render('a')
+        self.time_left = 180
+        self.timer_surface = self.small_face.render('3:00')
         self.timer_x = self.display.width * .7
 
-        self.assaut = 2
-        self.assaut_surface = self.small_face.render(f'{self.assaut}/3')
-        self.assaut_x = self.display.width * .3 - self.assaut_surface.get_width()
+        self.assaut = 0
+        self.assaut_surface = None
+        self.assaut_x = 0
+        self.update_assaut(1)
 
         self.extra_y = self.y + self.height + center(self.lowergap, self.timer_surface.get_height())
 
-    def set_red_pos(self, x: float, y: float):
+        self.clicks = dict()
+
+    def click(self, x: int, y: int, color: tuple) -> 'Piste':
+        now = time()
+        self.clicks[now] = Click(x, y, color, self.dualcircles.arc_vertices.copy(), now, self.clicks)
+        return self
+
+    def set_announcement(self, sign) -> 'Piste':
+        self.announcement_surface = self.big_face.render(lang(f'piste.{sign}'))
+        self.announcement_x = center(self.display.width, self.announcement_surface.get_width())
+        return self
+
+    def set_time_left(self, time_left) -> 'Piste':
+        self.time_left = time_left
+        return self.render_timer()
+
+    def render_timer(self) -> 'Piste':
+        minute = int(self.time_left) // 60
+        second = int(self.time_left) % 60
+        self.timer_surface = self.small_face.render(f'{minute}:{second:02d}')
+        return self
+
+    def update_assaut(self, assaut) -> 'Piste':
+        self.assaut = assaut
+        self.assaut_surface = self.small_face.render(f'{self.assaut}/3')
+        self.assaut_x = self.display.width * .3 - self.assaut_surface.get_width()
+        return self
+
+    def set_host_name(self, green_name: str) -> 'Piste':
+        self.green_name_surface = rotate(self.small_face.render(green_name), 90)
+        return self
+
+    def set_joiner_name(self, red_name: str) -> 'Piste':
+        self.red_name_surface = rotate(self.small_face.render(red_name), -90)
+        return self
+
+    def set_red_pos(self, x: float, y: float) -> 'Piste':
         self.dualcircles.x = linear(x, 0, Piste.WIDTH, self.x, self.x + self.width)
         self.dualcircles.y = linear(y, 0, Piste.HEIGHT, self.y, self.y + self.height)
+        return self
 
-    def set_green_pos(self, x: float, y: float):
+    def set_green_pos(self, x: float, y: float) -> 'Piste':
         self.dualcircles.x2 = linear(x, 0, Piste.WIDTH, self.x, self.x + self.width)
         self.dualcircles.y2 = linear(y, 0, Piste.HEIGHT, self.y, self.y + self.height)
+        return self
 
-    def render_timer(self):
-        minute = self.time_left // 60
-        second = self.time_left % 60
-        self.timer_surface = self.small_face.render(f'{minute}:{second:02d}')
-
-    def set_green_score(self, score: int):
+    def set_green_score(self, score: int) -> 'Piste':
         self.green_score = score
         self.green_surface = self.big_face.render(str(self.green_score))
         self.green_score_x = center(self.x, self.green_surface.get_width())
+        return self
 
-    def set_red_score(self, score: int):
+    def set_red_score(self, score: int) -> 'Piste':
         self.red_score = score
         self.red_surface = self.big_face.render(str(self.red_score))
         self.red_score_x = center(self.x, self.red_surface.get_width()) + self.width + self.x
+        return self
 
     def tick(self):
-        self.dualcircles.tick()
+        for click in set(self.clicks.values()):
+            click.tick()
 
+        self.dualcircles.tick()
         self.render_timer()
 
     def center_x(self, display: Display) -> 'Piste':
@@ -87,6 +149,9 @@ class Piste(Object):
         return self
 
     def render(self, display: Display):
+        for click in self.clicks.values():
+            click.render(display)
+
         self.dualcircles.render(display)
         draw.lines(display.display, BLACK, True, (
             (self.x, self.y),

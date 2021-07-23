@@ -1,7 +1,7 @@
 Direction,Header,Argument 1,Argument 2,Argument 3,Chained,Description,Implementation of Receiving
 <-,PING,message: str!,,,PONG,반응 요청,YES
 ->,PONG,message: str!,,,,반응 전송. <-PING의 대답,NO
-->,PING,요청 생성 시각: time: float,,,PONG,반응속도 확인 요청,NO
+->,PING,요청 생성 시각: time: float,,,PONG,반응속도 확인 요청,YES
 <-,PONG,요청 생성 시각: a_time: float,b_time: float,,,반응속도 확인 전송,YES
 <-,HOST,호스트 이름: host: str!,,,"HOSTOK, HOSTNO",게임 호스트로 참가 요청,YES
 ->,HOSTOK,,,,,게임 호스트로 참가 수락,NO
@@ -16,20 +16,20 @@ Direction,Header,Argument 1,Argument 2,Argument 3,Chained,Description,Implementa
 <-,SPEC,관전자 이름: name: str!,,,SPECOK,게임 관전자로 참여 요청,YES
 ->,SPECOK,,,,,게임 관전자로 참여 수락,NO
 <-,HOSTNAME,,,,"HOSTNAME, NOHOST",호스트 이름 전송 요청,YES
-->,HOSTNAME,name: str!,,,,호스트 이름 전송,NO
+->,HOSTNAME,name: str!,,,,호스트 이름 전송,YES
 ->,NOHOST,,,,,호스트 없음,NO
 <-,JOINNAME,,,,"JOINNAME, NOJOIN",참여자 이름 전송 요청,YES
-->,JOINNAME,name: str!,,,,참여자 이름 전송,NO
+->,JOINNAME,name: str!,,,,참여자 이름 전송,YES
 ->,NOJOIN,,,,,호스트 없음,NO
 <-,SPECNAME,,,,SPECNAME,관전자 이름 전송 요청,YES
 ->,SPECNAME,"names: str,!",,,,관전자 이름 목록 전송,NO
 <-,ASSA,,,,ASSA,아쏘 정보 전송 요청,YES
-->,ASSA,assaut: int,,,,아쏘 정보 전송,NO
+->,ASSA,assaut: int,,,,아쏘 정보 전송,YES
 <-,TIME,,,,TIME,시간 정보 전송 요청,YES
-->,TIME,anchor: float,time: float,,,시간 정보 전송,NO
-->,ANNOUNCE,sign: (engarde|pret|allez|halte),,,,게임 신호 전송,NO
+->,TIME,anchor: float,time: float,,,시간 정보 전송,YES
+->,ANNOUNCE,sign: (engarde|pret|allez|halte),,,,게임 신호 전송,YES
 <-,POS,x: float,y: float,,"HPOS, JPOS",위치 정보 전송,YES
-->,HPOS,x: float,y: float,,,호스트 위치 정보 전송,NO
-->,JPOS,x: float,y: float,,,참여자 위치 정보 전송,NO
+->,HPOS,x: float,y: float,,,호스트 위치 정보 전송,YES
+->,JPOS,x: float,y: float,,,참여자 위치 정보 전송,YES
 <-,CLICK,,,,CLICK,클릭 정보 전송,YES
 ->,CLICK,host: bool,x: float,y: float,,클릭 정보 전달,NO

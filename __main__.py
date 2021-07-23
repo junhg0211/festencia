@@ -29,7 +29,7 @@ class Main:
         self.state_manager = StateManager(self.display, fps_calculator, self.mouse_manager, keyboard_manager,
                                           self.shutdown)
         self.state_manager.set_state(
-            Selection('title', self.display, self.state_manager, fps_calculator, self.mouse_manager,
+            Selection(Selection.TITLE, self.display, self.state_manager, fps_calculator, self.mouse_manager,
                       keyboard_manager, self.shutdown))
 
     def shutdown(self):

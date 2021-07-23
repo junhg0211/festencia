@@ -2,7 +2,8 @@ from socket import socket
 from time import time
 from typing import Optional, List
 
-from server import ServerClient, ServerGame
+from web.server import ServerClient, ServerGame
+from util import Log
 
 
 class Server:
@@ -34,6 +35,7 @@ class Server:
         self.s.bind(('', self.port))
         self.s.listen()
         self.running = True
+        Log.server('Server started')
         self.run()
 
     def run(self):

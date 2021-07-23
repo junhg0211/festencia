@@ -23,6 +23,7 @@ class StateManager:
         When ``state`` is ..., args is ...
 
         * ``host_game``, [title: str]
+        * ``error``, [name: str, content: str]
         """
 
         if state == 'title':
@@ -33,6 +34,9 @@ class StateManager:
                                    self.keyboard_manager)
         elif state == 'host_game':
             self.state = Game(args[0], args[1], self.display, self.mouse_manager, self)
+        elif state == 'error':
+            self.state = Selection('error', self.display, self, self.fps_calculator, self.mouse_manager,
+                                   self.keyboard_manager, args[0], args[1])
 
     def set_state(self, state):
         self.state = state

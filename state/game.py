@@ -1,6 +1,6 @@
 from random import random
 
-from const import PRETENDARD_BOLD, BLACK
+from const import PRETENDARD_BOLD, BLACK, GREEN
 from display import Display
 from manager import MouseManager
 from object import Text
@@ -18,7 +18,6 @@ class Game(State):
         self.state_manager = state_manager
 
         self.piste = Piste(host_name, '*VACANT*', display)
-        self.object_manager.add(self.piste)
 
         title_face = Face(PRETENDARD_BOLD, 24, BLACK)
         self.title = Text(title, title_face, y=10).center_x(self.display)
@@ -27,17 +26,19 @@ class Game(State):
     def tick(self):
         super().tick()
 
-        if self.mouse_manager.left_start:
-            self.piste.set_red_pos(random() * Piste.WIDTH, random() * Piste.HEIGHT)
-
-        x = limit(self.mouse_manager.x, self.piste.x, self.piste.x + self.piste.width)
-        y = limit(self.mouse_manager.y, self.piste.y, self.piste.y + self.piste.height)
-
-        self.mouse_manager.set_pos(x, y)
-
+        x_ = limit(self.mouse_manager.x, self.piste.x, self.piste.x + self.piste.width)
+        y_ = limit(self.mouse_manager.y, self.piste.y, self.piste.y + self.piste.height)
+        self.mouse_manager.set_pos(x_, y_)
         x = linear(self.mouse_manager.x, self.piste.x, self.piste.x + self.piste.width, 0, Piste.WIDTH)
         y = linear(self.mouse_manager.y, self.piste.y, self.piste.y + self.piste.height, 0, Piste.HEIGHT)
         self.piste.set_green_pos(x, y)
 
+        self.piste.tick()
+
+        if self.mouse_manager.left_start:
+            self.piste.set_red_pos(random() * Piste.WIDTH, random() * Piste.HEIGHT)
+            self.piste.click(x_, y_, GREEN)
+
     def render(self, display: Display):
         super().render(display)
+        self.piste.render(display)
