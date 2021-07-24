@@ -69,7 +69,7 @@ class Client:
 
     def send(self, value: str):
         if not self.halted:
-            self.s.send(value.encode())
+            self.s.send(f'{value}\n'.encode())
             Log.client(f'-> {value}')
 
     def start(self):
