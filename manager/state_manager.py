@@ -24,7 +24,7 @@ class StateManager:
 
         * ``host_game``, [title: str, host: str, port: int, name: str]
         * ``error``, [content: str]
-        * ``join_game``, [host: str, port: int]
+        * ``join_game``, [host: str, port: int, name: str]
         """
 
         if state == 'title':
@@ -43,7 +43,7 @@ class StateManager:
             self.state = Selection(Selection.JOIN, self.display, self, self.fps_calculator, self.mouse_manager,
                                    self.keyboard_manager)
         elif state == 'join_game':
-            state = Game(Game.JOIN, self.display, self.mouse_manager, self, host=args[0], port=args[1])
+            state = Game(Game.JOIN, self.display, self.mouse_manager, self, host=args[0], port=args[1], name=args[2])
             if not (isinstance(self.state, Selection) and self.state.mode == Selection.ERROR):
                 # Handling the joining exceptions.
                 # When connection error occured while trying to connect to the server, this will not be held.

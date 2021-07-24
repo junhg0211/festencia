@@ -2,7 +2,6 @@ from random import random
 from threading import Thread
 
 import globals
-from const import GREEN
 from display import Display
 from manager import MouseManager
 from object.piste import Piste
@@ -27,7 +26,7 @@ class Game(State):
 
         self.piste = Piste('*VACANT*', '*VACANT*', '*UNTITLED*', display)
 
-        if mode == Game.HOST:
+        if self.mode == Game.HOST:
             self.server = Server(port)
             self.thread = Thread(target=self.server.start)
             self.thread.setDaemon(True)
@@ -37,9 +36,13 @@ class Game(State):
         self.client = Client(host, port, self.state_manager, self.piste)
         self.client.start()
 
-        if mode == Game.HOST:
+        if self.mode == Game.HOST:
             self.client.send_host(name)
             self.client.send_set_title(title)
+        elif self.mode == Game.JOIN:
+            self.client.send_join(name)
+            self.client.send_host_name()
+            self.client.send_join_name()
 
     def tick(self):
         super().tick()
@@ -47,15 +50,18 @@ class Game(State):
         x_ = limit(self.mouse_manager.x, self.piste.x, self.piste.x + self.piste.width)
         y_ = limit(self.mouse_manager.y, self.piste.y, self.piste.y + self.piste.height)
         self.mouse_manager.set_pos(x_, y_)
-        x = linear(self.mouse_manager.x, self.piste.x, self.piste.x + self.piste.width, 0, Piste.WIDTH)
-        y = linear(self.mouse_manager.y, self.piste.y, self.piste.y + self.piste.height, 0, Piste.HEIGHT)
-        self.piste.set_green_pos(x, y)
+
+        if self.mode:
+            x = linear(self.mouse_manager.x, self.piste.x, self.piste.x + self.piste.width, 0, Piste.WIDTH)
+            y = linear(self.mouse_manager.y, self.piste.y, self.piste.y + self.piste.height, 0, Piste.HEIGHT)
+            self.client.send_pos(x, y)
 
         self.piste.tick()
 
-        if self.mouse_manager.left_start:
-            self.piste.set_red_pos(random() * Piste.WIDTH, random() * Piste.HEIGHT)
-            self.piste.click(x_, y_, GREEN)
+        if self.mode:
+            if self.mouse_manager.left_start:
+                # self.piste.set_red_pos(random() * Piste.WIDTH, random() * Piste.HEIGHT)
+                self.client.send_click()
 
     def render(self, display: Display):
         super().render(display)

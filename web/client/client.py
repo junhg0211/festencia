@@ -29,6 +29,21 @@ class Client:
     def send_set_title(self, title: str):
         self.send(f'SETTITLE {title}')
 
+    def send_join(self, name: str):
+        self.send(f'JOIN {name}')
+
+    def send_host_name(self):
+        self.send('HOSTNAME')
+
+    def send_join_name(self):
+        self.send('JOINNAME')
+
+    def send_click(self):
+        self.send('CLICK')
+
+    def send_pos(self, x: float, y: float):
+        self.send(f'POS {x} {y}')
+
     def connect(self):
         Log.client(f'Connecting to {self.host}:{self.port}')
         try:
@@ -62,7 +77,8 @@ class Client:
                 while '' in value:
                     value.remove('')
                 for line in value:
-                    Log.client(f'<- {line}')
+                    if 'POS' not in line:
+                        Log.client(f'<- {line}')
                 return value
         else:
             return list()
@@ -70,7 +86,8 @@ class Client:
     def send(self, value: str):
         if not self.halted:
             self.s.send(f'{value}\n'.encode())
-            Log.client(f'-> {value}')
+            if 'POS' not in value:
+                Log.client(f'-> {value}')
 
     def start(self):
         Log.client('Start operated.')
@@ -110,17 +127,14 @@ class Client:
                     sign = tokens[1]
                     self.piste.set_announcement(sign)
                 elif tokens[0] == 'HPOS':
-                    x = float(tokens[1])
-                    y = float(tokens[2])
-                    self.piste.dualcircles.set_x(x).set_y(y)
-                elif tokens[0] == 'JPOS':
-                    x = float(tokens[1])
-                    y = float(tokens[2])
+                    x, y = self.interpolate_pos(tokens[1], tokens[2])
                     self.piste.dualcircles.set_x2(x).set_y2(y)
+                elif tokens[0] == 'JPOS':
+                    x, y = self.interpolate_pos(tokens[1], tokens[2])
+                    self.piste.dualcircles.set_x(x).set_y(y)
                 elif tokens[0] == 'CLICK':
-                    host = tokens[0] == 'True'
-                    x = linear(float(tokens[1]), 0, Piste.WIDTH, self.piste.x, self.piste.x + self.piste.width)
-                    y = linear(float(tokens[2]), 0, Piste.HEIGHT, self.piste.y, self.piste.y + self.piste.height)
+                    host = tokens[1] == 'True'
+                    x, y = self.interpolate_pos(tokens[2], tokens[3])
                     self.piste.click(x, y, GREEN if host else RED)
                 elif tokens[0] == 'HOSTOK':
                     name = ' '.join(tokens[1:])
@@ -128,7 +142,15 @@ class Client:
                 elif tokens[0] == 'TITLE':
                     title = ' '.join(tokens[1:])
                     self.piste.set_title(title)
+                elif tokens[0] == 'JOINOK':
+                    title = ' '.join(tokens[1:])
+                    self.piste.set_title(title)
         self.quit()
+
+    def interpolate_pos(self, x: str, y: str):
+        x = linear(float(x), 0, Piste.WIDTH, self.piste.x, self.piste.x + self.piste.width)
+        y = linear(float(y), 0, Piste.HEIGHT, self.piste.y, self.piste.y + self.piste.height)
+        return x, y
 
     def quit(self):
         if self.running and not self.halted:

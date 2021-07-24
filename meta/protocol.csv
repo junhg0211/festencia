@@ -8,7 +8,7 @@ Direction,Header,Argument 1,Argument 2,Argument 3,Chained,Description,Implementa
 ->,HOSTNO,,,,,게임 호스트로 참가 거절,NO
 <-,SETTITLE,title: str!,,,TITLE,게임 타이틀 설정,YES
 <-,JOIN,참가자 이름: name: str!,,,"JOINOK, JOINNO",게임 참가자로 참여 요청,YES
-->,JOINOK,게임 이름: title: str!,,,,게임 참가자 참여 수락,NO
+->,JOINOK,게임 이름: title: str!,,,,게임 참가자 참여 수락,YES
 ->,JOINNO,,,,,게임 참가자 참여 거절,NO
 <-,QUIT,,,,,접속 종료,YES
 <-,MESSAGE,name: str: base64,content: str!,,MESSAGE,메시지 요청,YES

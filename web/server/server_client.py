@@ -38,12 +38,14 @@ class ServerClient:
             while '' in value:
                 value.remove('')
             for line in value:
-                Log.server(f'{self} -> {line}')
+                if 'POS' not in line:
+                    Log.server(f'{self} -> {line}')
             return value
 
     def send(self, value: str):
         self.connection.send(f'{value}\n'.encode())
-        Log.server(f'{self} <- {value}')
+        if 'POS' not in value:
+            Log.server(f'{self} <- {value}')
         return value
 
     def run(self):
@@ -80,7 +82,8 @@ class ServerClient:
                     if self.server.joiner is None:
                         self.server.joiner = self
                         self.name = ' '.join(tokens[1:])
-                        self.send('JOINOK')
+                        self.send(f'JOINOK {self.server.title}')
+                        self.server.announce(f'JOINNAME {self.name}')
                     else:
                         self.send('JOINNO')
                 elif tokens[0] == 'QUIT':
@@ -115,12 +118,12 @@ class ServerClient:
                     x = float(tokens[1])
                     y = float(tokens[2])
                     if self == self.server.host:
-                        self.server.host_x = x
-                        self.server.host_y = y
+                        self.server.game.host_x = x
+                        self.server.game.host_y = y
                         self.server.announce(f'HPOS {x} {y}')
                     elif self == self.server.joiner:
-                        self.server.joiner_x = x
-                        self.server.joiner_y = y
+                        self.server.game.joiner_x = x
+                        self.server.game.joiner_y = y
                         self.server.announce(f'JPOS {x} {y}')
                 elif tokens[0] == 'CLICK':
                     if self == self.server.host:

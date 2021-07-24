@@ -103,7 +103,8 @@ class Selection(State):
             back = TextButton(lang('state.join.back'), button_face, lambda: self.state_manager.state_to('title'),
                               self.mouse_manager)
             join = TextButton(lang('state.join.join'), button_face,
-                              lambda: self.state_manager.state_to('join_game', host.inserted, int(port.inserted)),
+                              lambda: self.state_manager.state_to('join_game', host.inserted, int(port.inserted),
+                                                                  settings['name']),
                               self.mouse_manager)
 
             self.reactables.add(host)

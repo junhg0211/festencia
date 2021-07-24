@@ -35,10 +35,10 @@ class ServerGame:
         self.thread = Thread(target=self.start)
 
     def host_click(self):
-        pass  # todo when host clicked
+        self.server.announce(f'CLICK True {self.host_x} {self.host_y}')
 
     def joiner_click(self):
-        pass  # todo when joiner clicked
+        self.server.announce(f'CLICK False {self.joiner_x} {self.joiner_y}')
 
     def start(self):
         self.running = True
