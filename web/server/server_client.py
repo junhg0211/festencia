@@ -28,13 +28,21 @@ class ServerClient:
         self.thread.setDaemon(True)
         self.thread.start()
 
-    def recv(self):
-        value = self.connection.recv(1024).decode()
-        Log.server(f'{self} -> {value}')
-        return value
+    def recv(self) -> list:
+        try:
+            value = self.connection.recv(1024).decode().split('\n')
+        except ConnectionResetError:
+            self.quit()
+            Log.server(f'{self.host}:{self.port} ConnectionReset, quitted.')
+        else:
+            while '' in value:
+                value.remove('')
+            for line in value:
+                Log.server(f'{self} -> {line}')
+            return value
 
     def send(self, value: str):
-        self.connection.send(value.encode())
+        self.connection.send(f'{value}\n'.encode())
         Log.server(f'{self} <- {value}')
         return value
 
@@ -42,83 +50,84 @@ class ServerClient:
         while self.connected:
             recv = self.recv()
             if not recv:
-                self.quit()
                 break
 
-            tokens = recv.split(' ')
+            for line in recv:
+                tokens = line.split(' ')
 
-            if tokens[0] == 'PING':
-                message = ' '.join(tokens[1:])
-                self.send(f'PONG {message}')
-            elif tokens[0] == 'PONG':
-                a_time = float(tokens[1])
-                b_time = float(tokens[2])
-                c_time = time()
-                Log.server(f'{self}. SEND {(b_time - a_time) * 1000:.1f}ms, '
-                           f'RECV {(c_time - b_time) * 1000:.1f}ms, '
-                           f'PING {(c_time - a_time) * 1000:.1f} ms')
-            elif tokens[0] == 'HOST':
-                if self.server.host is None:
-                    self.server.host = self
-                    self.name = ' '.join(tokens[1:])
-                    self.send(f'HOSTOK {self.name}')
-                else:
-                    self.send('HOSTNO')
-            elif tokens[0] == 'SETTITLE':
-                if self.server.host == self:
-                    self.server.title = ' '.join(tokens[1:])
-                self.server.announce(f'TITLE {self.server.title}')
-            elif tokens[0] == 'JOIN':
-                if self.server.joiner is None:
-                    self.server.joiner = self
-                    self.name = ' '.join(tokens[1:])
-                    self.send('JOINOK')
-                else:
-                    self.send('JOINNO')
-            elif tokens[0] == 'QUIT':
-                self.quit()
-            elif tokens[0] == 'MESSAGE':
-                self.server.announce(recv)
-            elif tokens[0] == 'SPEC':
-                self.server.spectators.append(self)
-                self.send('SPECOK')
-            elif tokens[0] == 'HOSTNAME':
-                if self.server.host:
-                    self.send(f'HOSTNAME {self.server.host.name}')
-                else:
-                    self.send('NOHOST')
-            elif tokens[0] == 'JOINNAME':
-                if self.server.joiner:
-                    self.send(f'JOINNAME {self.server.joiner.name}')
-                else:
-                    self.send('NOJOIN')
-            elif tokens[0] == 'SPECNAME':
-                names = list()
-                for spectator in self.server.spectators:
-                    names.append(spectator.name)
-                names = ','.join(names)
-                self.send(f'SPECNAME {names}')
-            elif tokens[0] == 'ASSA':
-                self.send(f'ASSA {self.server.assaut}')
-            elif tokens[0] == 'TIME':
-                anchor, time_ = self.server.get_anchor_time()
-                self.send(f'TIME {anchor} {time_}')
-            elif tokens[0] == 'POS':
-                x = float(tokens[1])
-                y = float(tokens[2])
-                if self == self.server.host:
-                    self.server.host_x = x
-                    self.server.host_y = y
-                    self.server.announce(f'HPOS {x} {y}')
-                elif self == self.server.joiner:
-                    self.server.joiner_x = x
-                    self.server.joiner_y = y
-                    self.server.announce(f'JPOS {x} {y}')
-            elif tokens[0] == 'CLICK':
-                if self == self.server.host:
-                    self.server.game.host_click()
-                elif self == self.server.joiner:
-                    self.server.game.joiner_click()
+                if tokens[0] == 'PING':
+                    message = ' '.join(tokens[1:])
+                    self.send(f'PONG {message}')
+                elif tokens[0] == 'PONG':
+                    a_time = float(tokens[1])
+                    b_time = float(tokens[2])
+                    c_time = time()
+                    Log.server(f'{self}. SEND {(b_time - a_time) * 1000:.1f}ms, '
+                               f'RECV {(c_time - b_time) * 1000:.1f}ms, '
+                               f'PING {(c_time - a_time) * 1000:.1f} ms')
+                elif tokens[0] == 'HOST':
+                    if self.server.host is None:
+                        self.server.host = self
+                        self.name = ' '.join(tokens[1:])
+                        self.send(f'HOSTOK {self.name}')
+                    else:
+                        self.send('HOSTNO')
+                elif tokens[0] == 'SETTITLE':
+                    if self.server.host == self:
+                        self.server.title = ' '.join(tokens[1:])
+                    self.server.announce(f'TITLE {self.server.title}')
+                elif tokens[0] == 'JOIN':
+                    if self.server.joiner is None:
+                        self.server.joiner = self
+                        self.name = ' '.join(tokens[1:])
+                        self.send('JOINOK')
+                    else:
+                        self.send('JOINNO')
+                elif tokens[0] == 'QUIT':
+                    self.quit()
+                elif tokens[0] == 'MESSAGE':
+                    self.server.announce(line)
+                elif tokens[0] == 'SPEC':
+                    self.server.spectators.append(self)
+                    self.send('SPECOK')
+                elif tokens[0] == 'HOSTNAME':
+                    if self.server.host:
+                        self.send(f'HOSTNAME {self.server.host.name}')
+                    else:
+                        self.send('NOHOST')
+                elif tokens[0] == 'JOINNAME':
+                    if self.server.joiner:
+                        self.send(f'JOINNAME {self.server.joiner.name}')
+                    else:
+                        self.send('NOJOIN')
+                elif tokens[0] == 'SPECNAME':
+                    names = list()
+                    for spectator in self.server.spectators:
+                        names.append(spectator.name)
+                    names = ','.join(names)
+                    self.send(f'SPECNAME {names}')
+                elif tokens[0] == 'ASSA':
+                    self.send(f'ASSA {self.server.assaut}')
+                elif tokens[0] == 'TIME':
+                    anchor, time_ = self.server.get_anchor_time()
+                    self.send(f'TIME {anchor} {time_}')
+                elif tokens[0] == 'POS':
+                    x = float(tokens[1])
+                    y = float(tokens[2])
+                    if self == self.server.host:
+                        self.server.host_x = x
+                        self.server.host_y = y
+                        self.server.announce(f'HPOS {x} {y}')
+                    elif self == self.server.joiner:
+                        self.server.joiner_x = x
+                        self.server.joiner_y = y
+                        self.server.announce(f'JPOS {x} {y}')
+                elif tokens[0] == 'CLICK':
+                    if self == self.server.host:
+                        self.server.game.host_click()
+                    elif self == self.server.joiner:
+                        self.server.game.joiner_click()
+        self.quit()
 
     def quit(self):
         if self.connected:
