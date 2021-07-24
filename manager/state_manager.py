@@ -23,21 +23,31 @@ class StateManager:
         When ``state`` is ..., args is ...
 
         * ``host_game``, [title: str, host: str, port: int, name: str]
-        * ``error``, [name: str, content: str]
+        * ``error``, [content: str]
+        * ``join_game``, [host: str, port: int]
         """
 
         if state == 'title':
-            self.state = Selection('title', self.display, self, self.fps_calculator, self.mouse_manager,
+            self.state = Selection(Selection.TITLE, self.display, self, self.fps_calculator, self.mouse_manager,
                                    self.keyboard_manager, self.shutdown)
         elif state == 'host':
-            self.state = Selection('host', self.display, self, self.fps_calculator, self.mouse_manager,
+            self.state = Selection(Selection.HOST, self.display, self, self.fps_calculator, self.mouse_manager,
                                    self.keyboard_manager)
         elif state == 'host_game':
             self.state = Game(Game.HOST, self.display, self.mouse_manager, self,
                               title=args[0], host=args[1], port=args[2], name=args[3])
         elif state == 'error':
-            self.state = Selection('error', self.display, self, self.fps_calculator, self.mouse_manager,
-                                   self.keyboard_manager, args[0], args[1])
+            self.state = Selection(Selection.ERROR, self.display, self, self.fps_calculator, self.mouse_manager,
+                                   self.keyboard_manager, args[0])
+        elif state == 'join':
+            self.state = Selection(Selection.JOIN, self.display, self, self.fps_calculator, self.mouse_manager,
+                                   self.keyboard_manager)
+        elif state == 'join_game':
+            state = Game(Game.JOIN, self.display, self.mouse_manager, self, host=args[0], port=args[1])
+            if not (isinstance(self.state, Selection) and self.state.mode == Selection.ERROR):
+                # Handling the joining exceptions.
+                # When connection error occured while trying to connect to the server, this will not be held.
+                self.state = state
 
     def set_state(self, state):
         self.state = state

@@ -2,7 +2,8 @@ from socket import socket
 from threading import Thread
 from time import time
 
-from const import GREEN, RED
+import globals
+from const import GREEN, RED, lang
 from object.piste import Piste
 from util import Log, linear
 
@@ -17,6 +18,7 @@ class Client:
         self.s = socket()
 
         self.running = False
+        self.halted = False  # when socket is not connected to server and need to stop all the operations in this object
 
         self.thread = Thread(target=self.run)
         self.thread.setDaemon(True)
@@ -28,23 +30,47 @@ class Client:
         self.send(f'SETTITLE {title}')
 
     def connect(self):
-        self.s.connect((self.host, self.port))
-        Log.client(f'Connected to {self.host}:{self.port}')
+        Log.client(f'Connecting to {self.host}:{self.port}')
+        try:
+            self.s.connect((self.host, self.port))
+        except TimeoutError:
+            Log.client('Connection timed out, closing the Client socket.')
+            self.halted = True
+            self.quit()
+            globals.data['state_manager'].state_to('error', lang('error.join_timeout'))
+        else:
+            Log.client(f'Connected to {self.host}:{self.port}')
 
     def handle(self):
-        self.running = True
-        self.thread.start()
+        if not self.halted:
+            self.running = True
+            self.thread.start()
+        else:
+            Log.client('Handle signed but client halted, ignore the sign.')
 
     def recv(self) -> str:
-        value = self.s.recv(1024).decode()
-        Log.client(f'<- {value}')
-        return value
+        if not self.halted:
+            try:
+                value = self.s.recv(1024).decode()
+            except OSError:
+                Log.client('Connection destroyed, closing the Client socket.')
+                self.halted = True
+                self.quit()
+                globals.data['state_manager'].state_to('error', lang('error.connection_destroyed'))
+                return str()
+            else:
+                Log.client(f'<- {value}')
+                return value
+        else:
+            return str()
 
     def send(self, value: str):
-        self.s.send(value.encode())
-        Log.client(f'-> {value}')
+        if not self.halted:
+            self.s.send(value.encode())
+            Log.client(f'-> {value}')
 
     def start(self):
+        Log.client('Start operated.')
         self.connect()
         self.handle()
 
@@ -99,11 +125,12 @@ class Client:
             elif tokens[0] == 'TITLE':
                 title = ' '.join(tokens[1:])
                 self.piste.set_title(title)
+        self.quit()
 
     def quit(self):
-        # todo things when server closed
-        if self.running:
+        if self.running and not self.halted:
             Log.client('Quit')
             self.send('QUIT')
-            self.s.close()
             self.running = False
+        self.s.close()
+        Log.client('Socket closed.')

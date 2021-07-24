@@ -2,19 +2,19 @@ from random import random
 from threading import Thread
 
 import globals
-from const import PRETENDARD_BOLD, BLACK, GREEN
+from const import GREEN
 from display import Display
 from manager import MouseManager
-from object import Text
 from object.piste import Piste
 from state import State
-from util import Face, linear, limit
+from util import linear, limit
 from web.client import Client
 from web.server import Server
 
 
 class Game(State):
     HOST = 'host'
+    JOIN = 'join'
 
     def __init__(self, mode: str, display: Display, mouse_manager: MouseManager, state_manager, *,
                  title: str = '', host: str = '', port: int = 0, name: str = ''):

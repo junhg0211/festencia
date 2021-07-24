@@ -8,15 +8,20 @@
       "quit": "종료"
     },
     "host": {
-      "title": "호스트",
-      "port": "포트",
-      "room_title": "방제",
+      "port_template": "포트: {}",
+      "room_title_template": "방제: {}",
       "back": "뒤로 가기",
       "start": "시작"
     },
     "error": {
       "title": "오류",
       "back": "OK"
+    },
+    "join": {
+      "back": "돌아가기",
+      "host_template": "호스트: {}",
+      "port_template": "포트: {}",
+      "join": "참가"
     }
   },
   "piste": {
@@ -24,5 +29,9 @@
     "pret": "PRÊT",
     "allez": "ALLEZ",
     "halte": "HALTE"
+  },
+  "error": {
+    "join_timeout": "서버가 열려있지 않거나 응답하지 않습니다.",
+    "connection_destroyed": "서버가 닫혔거나 접속하지 못했습니다."
   }
 }

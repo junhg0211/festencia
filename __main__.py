@@ -30,6 +30,7 @@ class Main:
             .add(fps_calculator)
         self.state_manager = StateManager(self.display, fps_calculator, self.mouse_manager, keyboard_manager,
                                           self.shutdown)
+        globals.data['state_manager'] = self.state_manager
         self.state_manager.set_state(
             Selection(Selection.TITLE, self.display, self.state_manager, fps_calculator, self.mouse_manager,
                       keyboard_manager, self.shutdown))

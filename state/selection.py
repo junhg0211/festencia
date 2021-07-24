@@ -16,6 +16,7 @@ class Selection(State):
     TITLE = 'title'
     HOST = 'host'
     ERROR = 'error'
+    JOIN = 'join'
 
     def __init__(self, mode: str, display: Display, state_manager, fps_calculator: FPSCalculator,
                  mouse_manager: MouseManager, keyboard_manager: KeyboardManager, *args):
@@ -27,6 +28,7 @@ class Selection(State):
 
         super().__init__()
 
+        self.mode = mode
         self.display = display
         self.state_manager = state_manager
         self.fps_calculator = fps_calculator
@@ -44,14 +46,11 @@ class Selection(State):
         title = lang('title')
         if mode == Selection.TITLE:
             host = TextButton(lang('state.title.host'), button_face, lambda: self.state_manager.state_to('host'),
-                              self.mouse_manager) \
-                .center_y(self.display).add_y(Selection.PADDING)
-            join = TextButton(lang('state.title.join'), button_face, lambda: None, self.mouse_manager) \
-                .center_y(self.display).add_y(Selection.PADDING)
-            spectate = TextButton(lang('state.title.spectate'), button_face, lambda: None, self.mouse_manager) \
-                .center_y(self.display).add_y(Selection.PADDING)
-            quit_ = TextButton(lang('state.title.quit'), button_face, args[0], self.mouse_manager) \
-                .center_y(self.display).add_y(Selection.PADDING)
+                              self.mouse_manager)
+            join = TextButton(lang('state.title.join'), button_face,
+                              lambda: self.state_manager.state_to('join'), self.mouse_manager)
+            spectate = TextButton(lang('state.title.spectate'), button_face, lambda: None, self.mouse_manager)
+            quit_ = TextButton(lang('state.title.quit'), button_face, args[0], self.mouse_manager)
 
             self.reactables.add(host)
             self.reactables.add(join)
@@ -60,44 +59,62 @@ class Selection(State):
             self.spacer = Spacer(Selection.GAP, *self.reactables.objects)
 
         elif mode == Selection.HOST:
-            title = lang('state.host.title')
+            title = lang('state.title.host')
 
-            port = TextInserter(f'{lang("state.host.port")}: {{}}', button_face,
-                                self.mouse_manager, self.keyboard_manager, settings['port']) \
-                .center_y(self.display).add_y(Selection.PADDING)
-            game_title = TextInserter(f'{lang("state.host.room_title")}: {{}}', button_face,
-                                      self.mouse_manager, self.keyboard_manager, settings['room_title']) \
-                .center_y(self.display).add_y(Selection.PADDING)
-            game_title.ender = lambda: update('room_title', game_title.string)
+            port = TextInserter(lang("state.host.port_template"), button_face,
+                                self.mouse_manager, self.keyboard_manager, settings['port'])
+            game_title = TextInserter(lang('state.host.room_title_template'), button_face,
+                                      self.mouse_manager, self.keyboard_manager, settings['room_title'])
+            game_title.ender = lambda: update('room_title', game_title.inserted)
             back = TextButton(lang('state.host.back'), button_face, lambda: self.state_manager.state_to('title'),
-                              self.mouse_manager) \
-                .center_y(self.display).add_y(Selection.PADDING)
+                              self.mouse_manager)
             start = TextButton(lang('state.host.start'), button_face,
                                lambda: self.state_manager.state_to('host_game',
-                                                                   game_title.string, gethostbyname(getfqdn()),
-                                                                   int(port.string), settings['name']),
-                               self.mouse_manager) \
-                .center_y(self.display).add_y(Selection.PADDING)
+                                                                   game_title.inserted, gethostbyname(getfqdn()),
+                                                                   int(port.inserted), settings['name']),
+                               self.mouse_manager)
 
             self.reactables.add(port)
             self.reactables.add(game_title)
             self.reactables.add(back)
             self.reactables.add(start)
-
             self.spacer = Spacer(Selection.GAP, *self.reactables.objects)
 
         elif mode == Selection.ERROR:
             title = lang('state.error.title')
 
-            content = Text(args[0], button_face).center_y(self.display).add_y(Selection.PADDING)
+            content = Text(args[0], button_face)
             back = TextButton(lang('state.error.back'), button_face, lambda: self.state_manager.state_to('title'),
-                              self.mouse_manager) \
-                .center_y(self.display).add_y(Selection.PADDING)
+                              self.mouse_manager)
 
             self.reactables.add(content)
             self.reactables.add(back)
-
             self.spacer = Spacer(Selection.GAP, *self.reactables.objects)
+
+        elif mode == Selection.JOIN:
+            title = lang('state.title.join')
+
+            host = TextInserter(lang('state.join.host_template'), button_face, self.mouse_manager,
+                                self.keyboard_manager, settings['host'])
+            host.ender = lambda: update('host', host.inserted)
+            port = TextInserter(lang('state.join.port_template'), button_face, self.mouse_manager,
+                                self.keyboard_manager, settings['port'])
+            port.ender = lambda: update('port', port.inserted)
+            back = TextButton(lang('state.join.back'), button_face, lambda: self.state_manager.state_to('title'),
+                              self.mouse_manager)
+            join = TextButton(lang('state.join.join'), button_face,
+                              lambda: self.state_manager.state_to('join_game', host.inserted, int(port.inserted)),
+                              self.mouse_manager)
+
+            self.reactables.add(host)
+            self.reactables.add(port)
+            self.reactables.add(back)
+            self.reactables.add(join)
+            self.spacer = Spacer(Selection.GAP, *self.reactables.objects)
+
+        for object_ in self.reactables.objects:
+            # noinspection PyUnresolvedReferences
+            object_.center_y(self.display).add_y(Selection.PADDING)
 
         self.title = Text(title, title_face).center(self.display).add_y(-75)
         self.object_manager.add(self.title)
