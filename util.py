@@ -1,3 +1,4 @@
+from datetime import datetime
 from math import inf, pi
 
 from pygame import Surface
@@ -70,12 +71,12 @@ class Spacer:
 class Log:
     @staticmethod
     def debug(message):
-        print(f'[DEBUG] {message}')
+        print(f'{datetime.now()} [DEBUG] {message}')
 
     @staticmethod
     def server(message):
-        print(f'[SERVER] {message}')
+        print(f'{datetime.now()} [SERVER] {message}')
 
     @staticmethod
     def client(message):
-        print(f'[CLIENT] {message}')
+        print(f'{datetime.now()} [CLIENT] {message}')
