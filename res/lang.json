@@ -32,6 +32,7 @@
   },
   "error": {
     "join_timeout": "서버가 열려있지 않거나 응답하지 않습니다.",
-    "connection_destroyed": "서버가 닫혔거나 접속하지 못했습니다."
+    "connection_destroyed": "서버가 닫혔거나 접속하지 못했습니다.",
+    "disconnected": "서버로 정보를 전달할 수 없거나, 서버가 종료되었습니다."
   }
 }

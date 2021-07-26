@@ -85,7 +85,12 @@ class Client:
 
     def send(self, value: str):
         if not self.halted:
-            self.s.send(f'{value}\n'.encode())
+            try:
+                self.s.send(f'{value}\n'.encode())
+            except OSError:
+                self.quit()
+                globals.data['state_manager'].state_to('error', lang('error.disconnected'))
+                return
             if 'POS' not in value:
                 Log.client(f'-> {value}')
 
