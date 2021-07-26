@@ -162,8 +162,11 @@ class Piste(Object):
         self.render_timer()
 
     def render(self, display: Display):
-        for click in self.clicks.values():
-            click.render(display)
+        try:
+            for click in self.clicks.values():
+                click.render(display)
+        except RuntimeError:
+            pass
 
         self.dualcircles.render(display)
         draw.lines(display.display, BLACK, True, (
