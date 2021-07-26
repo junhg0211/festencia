@@ -1,4 +1,5 @@
 from threading import Thread
+from time import sleep
 
 
 class ServerGame:
@@ -32,7 +33,10 @@ class ServerGame:
         """
 
         self.running = False
-        self.thread = Thread(target=self.start)
+        self.thread = Thread(target=self.run)
+        self.thread.setDaemon(True)
+
+        self.frame_duration = 1/20
 
     def host_click(self):
         self.server.announce(f'CLICK True {self.host_x} {self.host_y}')
@@ -42,9 +46,14 @@ class ServerGame:
 
     def start(self):
         self.running = True
-        self.thread.setDaemon(True)
         self.thread.start()
 
     def run(self):
+        i = 0
         while self.running:
-            print('Game ticking')
+            sleep(self.frame_duration)
+            print(f'Game Tick {i + 1}')
+            i += 1
+
+    def shutdown(self):
+        self.running = False

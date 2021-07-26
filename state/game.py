@@ -50,17 +50,18 @@ class Game(State):
         y_ = limit(self.mouse_manager.y, self.piste.y, self.piste.y + self.piste.height)
         self.mouse_manager.set_pos(x_, y_)
 
-        if self.mode:
-            x = linear(self.mouse_manager.x, self.piste.x, self.piste.x + self.piste.width, 0, Piste.WIDTH)
-            y = linear(self.mouse_manager.y, self.piste.y, self.piste.y + self.piste.height, 0, Piste.HEIGHT)
-            self.client.send_pos(x, y)
+        x = linear(self.mouse_manager.x, self.piste.x, self.piste.x + self.piste.width, 0, Piste.WIDTH)
+        y = linear(self.mouse_manager.y, self.piste.y, self.piste.y + self.piste.height, 0, Piste.HEIGHT)
+        self.client.send_pos(x, y)
 
         self.piste.tick()
 
-        if self.mode:
-            if self.mouse_manager.left_start:
-                # self.piste.set_red_pos(random() * Piste.WIDTH, random() * Piste.HEIGHT)
-                self.client.send_click()
+        if self.mouse_manager.left_start:
+            self.client.send_click()
+
+        if self.mode == Game.HOST:
+            if self.mouse_manager.right_end:
+                self.client.send_start()
 
     def render(self, display: Display):
         super().render(display)

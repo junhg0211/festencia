@@ -130,6 +130,10 @@ class ServerClient:
                         self.server.game.host_click()
                     elif self == self.server.joiner:
                         self.server.game.joiner_click()
+                elif tokens[0] == 'START':
+                    if self == self.server.host:
+                        if not self.server.game.running:
+                            self.server.game.start()
         self.quit()
 
     def quit(self):

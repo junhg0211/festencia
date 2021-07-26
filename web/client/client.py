@@ -44,6 +44,9 @@ class Client:
     def send_pos(self, x: float, y: float):
         self.send(f'POS {x} {y}')
 
+    def send_start(self):
+        self.send('START')
+
     def connect(self):
         Log.client(f'Connecting to {self.host}:{self.port}')
         try:

@@ -52,6 +52,8 @@ class Server:
         if self.running:
             Log.server('Shutting down...')
             self.running = False
+            if self.game.running:
+                self.game.shutdown()
             if self.host is not None:
                 self.host.quit()
             if self.joiner is not None:
