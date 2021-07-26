@@ -35,6 +35,8 @@ class Piste(Object):
     HEIGHT = 11
     RADIUS = 1.8
 
+    SIGN_ENGARDE = 'engarde'
+
     def __init__(self, green_name: str, red_name: str, title: str, display: Display, x: int = 0, y: int = 0):
         super().__init__(x, y)
         self.display = display
@@ -70,6 +72,8 @@ class Piste(Object):
         self.announcement_surface = self.big_face.render(lang('piste.engarde'))
         self.announcement_x = center(self.display.width, self.announcement_surface.get_width())
         self.announcement_y = self.y + self.height + center(self.lowergap, self.announcement_surface.get_height())
+
+        self.engarde_guide = False
 
         self.time_left = 180
         self.timer_surface = self.small_face.render('3:00')
@@ -107,6 +111,7 @@ class Piste(Object):
         return self
 
     def set_announcement(self, sign) -> 'Piste':
+        self.engarde_guide = sign == Piste.SIGN_ENGARDE
         self.announcement_surface = self.big_face.render(lang(f'piste.{sign}'))
         self.announcement_x = center(self.display.width, self.announcement_surface.get_width())
         return self
@@ -166,6 +171,11 @@ class Piste(Object):
                 click.render(display)
         except RuntimeError:
             pass
+
+        if self.engarde_guide:
+            gfxdraw.aacircle(display.display, self.x, self.y, self.dualcircles.radius, GREEN)
+            gfxdraw.aacircle(display.display, self.x + self.width, int(self.y + self.height), self.dualcircles.radius,
+                             RED)
 
         self.dualcircles.render(display)
         draw.lines(display.display, BLACK, True, (
