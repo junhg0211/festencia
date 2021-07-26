@@ -1,3 +1,4 @@
+import re
 from socket import gethostbyname, getfqdn
 
 from const import PRETENDARD_BOLD, BLACK, lang
@@ -100,6 +101,15 @@ class Selection(State):
             port = TextInserter(lang('state.join.port_template'), button_face, self.mouse_manager,
                                 self.keyboard_manager, settings['port'])
             port.ender = lambda: update('port', port.inserted)
+            name = TextInserter(lang('state.join.name_template'), button_face, self.mouse_manager,
+                                self.keyboard_manager, settings['name'])
+
+            def ender():
+                update('name', name.inserted)
+                if re.compile(r'[\dA-Z\- ]+').fullmatch(name.inserted) is None or \
+                        button_face.render(name.inserted).get_width() > button_face.render('W' * 12).get_width():
+                    name.set_inserted('UNNAMED')
+            name.ender = ender
             back = TextButton(lang('state.join.back'), button_face, lambda: self.state_manager.state_to('title'),
                               self.mouse_manager)
             join = TextButton(lang('state.join.join'), button_face,
@@ -109,6 +119,7 @@ class Selection(State):
 
             self.reactables.add(host)
             self.reactables.add(port)
+            self.reactables.add(name)
             self.reactables.add(back)
             self.reactables.add(join)
             self.spacer = Spacer(Selection.GAP, *self.reactables.objects)

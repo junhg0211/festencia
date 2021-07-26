@@ -84,24 +84,30 @@ class TextInserter(TextButton):
         self.inserting = True
         self.keyboard_manager.pop()
 
+    def set_inserted(self, inserted):
+        self.inserted = inserted
+        self.set_text(self.text_template.format(self.inserted))
+
     def tick(self):
         super().tick()
 
         if self.inserting:
+            inserting_off = False
             self.inserted += self.keyboard_manager.pop()
             if self.inserted:
                 if self.inserted[-1] == '\b':
                     self.inserted = self.inserted[:-2]
                 elif self.inserted[-1] == '\r':
                     self.inserted = self.inserted[:-1]
-                    self.inserting = False
+                    inserting_off = True
                 elif self.inserted[-1] == '\x16':
                     self.inserted = self.inserted[:-1] + paste()
                 elif self.inserted[-1] in '\x7f':
                     self.inserted = ''
                 elif self.inserted[-1] in ('\t', '\n', '\x1b'):
                     self.inserted = self.inserted[:-1]
-            if self.mouse_manager.left_start and not self.mouse_in():
+            if self.mouse_manager.left_start and not self.mouse_in() \
+                    or inserting_off:
                 self.inserting = False
                 if self.ender is not None:
                     self.ender()

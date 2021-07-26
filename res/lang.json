@@ -21,7 +21,8 @@
       "back": "돌아가기",
       "host_template": "호스트: {}",
       "port_template": "포트: {}",
-      "join": "참가"
+      "join": "참가",
+      "name_template": "이름: {}"
     }
   },
   "piste": {
