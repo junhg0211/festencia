@@ -34,4 +34,4 @@ Direction,Header,Argument 1,Argument 2,Argument 3,Chained,Description,Implementa
 <-,CLICK,,,,CLICK,클릭 정보 전송,YES
 ->,CLICK,host: bool,x: float,y: float,,클릭 정보 전달,YES
 ->,TITLE,title: str!,,,,게임 이름 전송,YES
-<-,START,,,,,게임 시작,NO
+<-,START,,,,,게임 시작,YES
