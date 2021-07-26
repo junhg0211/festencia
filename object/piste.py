@@ -66,7 +66,7 @@ class Piste(Object):
         title_face = Face(PRETENDARD_BOLD, 24, BLACK)
         self.title = Text(title, title_face, y=10).center_x(self.display)
 
-        self.announcement = False
+        self.announcement = True
         self.announcement_surface = self.big_face.render(lang('piste.engarde'))
         self.announcement_x = center(self.display.width, self.announcement_surface.get_width())
         self.announcement_y = self.y + self.height + center(self.lowergap, self.announcement_surface.get_height())
