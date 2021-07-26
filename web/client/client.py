@@ -56,6 +56,11 @@ class Client:
             self.halted = True
             self.quit()
             globals.data['state_manager'].state_to('error', lang('error.join_timeout'))
+        except ConnectionRefusedError:
+            Log.client('Connection refused, closing the Client socket.')
+            self.halted = True
+            self.quit()
+            globals.data['state_manager'].state_to('error', lang('error.connection_refused'))
         else:
             Log.client(f'Connected to {self.host}:{self.port}')
 
