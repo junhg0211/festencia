@@ -153,6 +153,12 @@ class Client:
                 elif tokens[0] == 'JOINOK':
                     title = ' '.join(tokens[1:])
                     self.piste.set_title(title)
+                elif tokens[0] == 'HSCORE':
+                    score = int(tokens[1])
+                    self.piste.set_green_score(score)
+                elif tokens[0] == 'JSCORE':
+                    score = int(tokens[1])
+                    self.piste.set_red_score(score)
         self.quit()
 
     def interpolate_pos(self, x: str, y: str):

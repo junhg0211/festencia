@@ -67,15 +67,17 @@ class ServerGame:
 
     def host_click(self):
         self.server.announce(f'CLICK True {self.host_x} {self.host_y}')
-        if self.collide():
-            self.host_score += 1
-            self.update_state(ServerGame.STATE_ALLEZ)
+        if self.state == ServerGame.STATE_ALLEZ:
+            if self.collide():
+                self.host_score += 1
+                self.update_state(ServerGame.STATE_HALTE)
 
     def joiner_click(self):
         self.server.announce(f'CLICK False {self.joiner_x} {self.joiner_y}')
-        if self.collide():
-            self.joiner_score += 1
-            self.update_state(ServerGame.STATE_ALLEZ)
+        if self.state == ServerGame.STATE_ALLEZ:
+            if self.collide():
+                self.joiner_score += 1
+                self.update_state(ServerGame.STATE_HALTE)
 
     def start(self):
         self.running = True
@@ -95,13 +97,22 @@ class ServerGame:
         self.state = state
         if self.state == ServerGame.STATE_ENGARDE:
             self.sign(ServerGame.SIGN_ENGARDE)
+
         elif self.state == ServerGame.STATE_PRET1:
+            self.delta = 1
             self.sign(ServerGame.SIGN_PRET)
+
         elif self.state == ServerGame.STATE_PRET2:
             self.delta = random()
+
         elif self.state == ServerGame.STATE_ALLEZ:
-            self.delta = 5
             self.sign(ServerGame.SIGN_ALLEZ)
+
+        elif self.state == ServerGame.STATE_HALTE:
+            self.delta = 5
+            self.server.announce(f'HSCORE {self.host_score}\nJSCORE {self.joiner_score}')
+            self.sign(ServerGame.SIGN_HALTE)
+
         elif self.state == ServerGame.STATE_HALTE_REST:
             self.delta = 30
 
@@ -118,9 +129,16 @@ class ServerGame:
             elif self.state == ServerGame.STATE_PRET1:
                 if not self.check_engarde():
                     self.update_state(ServerGame.STATE_ENGARDE)
-                self.delta += self.frame_duration
-                if self.delta >= 1:
+                self.delta -= self.frame_duration
+                if self.delta <= 0:
                     self.update_state(ServerGame.STATE_PRET2)
+
+            elif self.state == ServerGame.STATE_PRET2:
+                if not self.check_engarde():
+                    self.update_state(ServerGame.STATE_ENGARDE)
+                self.delta -= self.frame_duration
+                if self.delta <= 0:
+                    self.update_state(ServerGame.STATE_ALLEZ)
 
             elif self.state == ServerGame.STATE_ALLEZ:
                 self.time -= self.frame_duration

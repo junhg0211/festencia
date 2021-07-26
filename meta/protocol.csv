@@ -35,3 +35,5 @@ Direction,Header,Argument 1,Argument 2,Argument 3,Chained,Description,Implementa
 ->,CLICK,host: bool,x: float,y: float,,클릭 정보 전달,YES
 ->,TITLE,title: str!,,,,게임 이름 전송,YES
 <-,START,,,,,게임 시작,YES
+->,HSCORE,score: int,,,,호스트 점수 전송,YES
+->,JSCORE,score: int,,,,참여자 점수 전송,YES
