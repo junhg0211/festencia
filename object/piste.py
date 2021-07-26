@@ -12,16 +12,16 @@ from util import center, Face, linear
 class Click(Object):
     DURATION = 2
 
-    def __init__(self, x: int, y: int, color: tuple, intersection: list, time_: float, dict_: dict):
+    def __init__(self, x: int, y: int, color: tuple, intersection: list, time_: float, excludes: list):
         super().__init__(x, y)
         self.color = color
         self.intersection = intersection
         self.time = time_
-        self.dict = dict_
+        self.excludes = excludes
 
     def tick(self):
         if self.time + Click.DURATION < time():
-            del self.dict[self.time]
+            self.excludes.append(self.time)
 
     def render(self, display: Display):
         draw.aaline(display.display, self.color, (self.x - 10, self.y - 10), (self.x + 10, self.y + 10))
@@ -84,10 +84,11 @@ class Piste(Object):
         self.extra_y = self.y + self.height + center(self.lowergap, self.timer_surface.get_height())
 
         self.clicks = dict()
+        self.clicks_excludes = list()
 
     def click(self, x: int, y: int, color: tuple) -> 'Piste':
         now = time()
-        self.clicks[now] = Click(x, y, color, self.dualcircles.arc_vertices.copy(), now, self.clicks)
+        self.clicks[now] = Click(x, y, color, self.dualcircles.arc_vertices.copy(), now, self.clicks_excludes)
         return self
 
     def render_timer(self) -> 'Piste':
@@ -152,6 +153,10 @@ class Piste(Object):
     def tick(self):
         for click in set(self.clicks.values()):
             click.tick()
+
+        for exclude in self.clicks_excludes:
+            del self.clicks[exclude]
+        self.clicks_excludes.clear()
 
         self.dualcircles.tick()
         self.render_timer()
