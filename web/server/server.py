@@ -29,7 +29,7 @@ class Server:
             spectator.send(message)
 
     def get_anchor_time(self):
-        return time(), self.game.time
+        return time(), self.game.time_left
 
     def start(self):  # this runs in thread
         self.s.bind(('', self.port))

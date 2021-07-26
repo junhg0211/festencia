@@ -1,7 +1,7 @@
 from math import hypot
 from random import random
 from threading import Thread
-from time import sleep
+from time import sleep, time
 
 from util import Log
 
@@ -40,7 +40,8 @@ class ServerGame:
         self.joiner_score = 0
 
         self.assaut = 1
-        self.time = 180.0
+        self.time_left = 180.0
+        self.previous_time_left = self.time_left
         self.state = 0
         """
         0 - not started waiting for participant
@@ -141,13 +142,19 @@ class ServerGame:
                     self.update_state(ServerGame.STATE_ALLEZ)
 
             elif self.state == ServerGame.STATE_ALLEZ:
-                self.time -= self.frame_duration
-                if self.time <= 0:
+                self.time_left -= self.frame_duration
+                if self.time_left <= 0:
                     self.assaut += 1
                     if self.assaut == 3:
                         self.update_state(ServerGame.STATE_RESULT)
                     else:
                         self.update_state(ServerGame.STATE_HALTE_REST)
+
+                if int(self.previous_time_left) != int(self.time_left):
+                    anchor, time_left = self.server.get_anchor_time()
+                    self.server.announce(f'TIME {anchor} {time_left}')
+
+                self.previous_time_left = self.time_left
 
             elif self.state == ServerGame.STATE_HALTE:
                 self.delta -= self.frame_duration
