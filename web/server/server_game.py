@@ -42,10 +42,9 @@ class ServerGame:
 
     def start(self):
         self.running = True
+        self.thread.setDaemon(True)
+        self.thread.start()
 
     def run(self):
         while self.running:
-            pass
-
-    def tick(self):
-        pass
+            print('Game ticking')

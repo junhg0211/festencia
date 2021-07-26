@@ -33,8 +33,7 @@ class Click(Object):
 class Piste(Object):
     WIDTH = 20
     HEIGHT = 11
-    RADIUS = 3.0
-    # todo set the proper radius to be any proper games
+    RADIUS = 1.8
 
     def __init__(self, green_name: str, red_name: str, title: str, display: Display, x: int = 0, y: int = 0):
         super().__init__(x, y)

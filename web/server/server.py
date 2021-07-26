@@ -31,7 +31,7 @@ class Server:
     def get_anchor_time(self):
         return time(), self.game.time
 
-    def start(self):
+    def start(self):  # this runs in thread
         self.s.bind(('', self.port))
         self.s.listen()
         self.running = True
