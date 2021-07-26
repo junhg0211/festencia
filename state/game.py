@@ -38,6 +38,7 @@ class Game(State):
         if self.mode == Game.HOST:
             self.client.send_host(name)
             self.client.send_set_title(title)
+            self.client.send_start()
         elif self.mode == Game.JOIN:
             self.client.send_join(name)
             self.client.send_host_name()
@@ -58,10 +59,6 @@ class Game(State):
 
         if self.mouse_manager.left_start:
             self.client.send_click()
-
-        if self.mode == Game.HOST:
-            if self.mouse_manager.right_end:
-                self.client.send_start()
 
     def render(self, display: Display):
         super().render(display)
