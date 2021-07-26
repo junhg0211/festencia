@@ -33,7 +33,8 @@ class Click(Object):
 class Piste(Object):
     WIDTH = 20
     HEIGHT = 11
-    RADIUS = 0.88
+    RADIUS = 1.5
+    # todo set the proper radius to be any proper games
 
     def __init__(self, green_name: str, red_name: str, title: str, display: Display, x: int = 0, y: int = 0):
         super().__init__(x, y)
@@ -44,7 +45,7 @@ class Piste(Object):
 
         self.center_x(self.display).set_y(50)
 
-        self.dualcircles = Dualcircles(0, 0, 0, 0, self.height / 100 * 8)
+        self.dualcircles = Dualcircles(0, 0, 0, 0, linear(Piste.RADIUS, 0, Piste.HEIGHT, 0, self.height))
         self.lowergap = self.display.height - (self.y + self.height)
 
         self.big_face = Face(PRETENDARD_BOLD, 128, BLACK)

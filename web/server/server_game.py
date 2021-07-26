@@ -4,7 +4,7 @@ from threading import Thread
 class ServerGame:
     WIDTH = 20
     HEIGHT = 11
-    RADIUS = 0.88
+    RADIUS = 1.5
 
     def __init__(self, server):
         self.server = server
