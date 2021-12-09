@@ -22,6 +22,8 @@ class Text(Object):
         self.height = self.surface.get_height()
 
     def center(self, display: Display) -> 'Text':
+        """ Centers the text on the display. """
+
         self.set_x(center(display.width, self.width))
         self.center_y(display)
         return self
@@ -50,6 +52,8 @@ class Text(Object):
 
 
 class TextButton(Text):
+    """ A text object that can be clicked. """
+
     def __init__(self, text: str, face: Face, action: Callable, mouse_manager: MouseManager, x: int = 0, y: int = 0):
         super().__init__(text, face, x, y)
 
@@ -57,8 +61,9 @@ class TextButton(Text):
         self.mouse_manager = mouse_manager
 
     def mouse_in(self):
+        """ Returns True if the mouse is in the button. """
         return self.x < self.mouse_manager.x < self.x + self.width \
-               and self.y < self.mouse_manager.y < self.y + self.height
+            and self.y < self.mouse_manager.y < self.y + self.height
 
     def tick(self):
         if self.mouse_manager.left_end:
@@ -67,6 +72,8 @@ class TextButton(Text):
 
 
 class TextInserter(TextButton):
+    """ A text object that can be clicked and typed into. """
+
     def __init__(self, text_template: str, face: Face, mouse_manager: MouseManager,
                  keyboard_manager: KeyboardManager, default_text: str = '', ender: Optional[Callable] = None,
                  x: int = 0, y: int = 0):

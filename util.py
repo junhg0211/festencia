@@ -33,6 +33,10 @@ def linear(value, min_, max_, from_, to):
 
 
 class Face:
+    """
+    A class that represents a font face, used in Text class.
+    """
+
     def __init__(self, font_path: str, font_size: int, color: tuple):
         self.path = font_path
         self.size = font_size
@@ -50,11 +54,14 @@ class Face:
 
 
 class Spacer:
+    """ A class that helps to create a space between multiple objects. """
+
     def __init__(self, gap: int, *objects):
         self.gap = gap
         self.objects = objects
 
     def get_width(self) -> int:
+        """ Returns the width of the whole objects when they're spaced. """
         result = self.gap * (len(self.objects) - 1)
         for object_ in self.objects:
             result += object_.width
@@ -69,6 +76,8 @@ class Spacer:
 
 
 class Log:
+    """ A class that helps to log information."""
+
     @staticmethod
     def debug(message):
         print(f'{datetime.now()} [DEBUG] {message}')

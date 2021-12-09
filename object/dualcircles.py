@@ -49,6 +49,8 @@ class Dualcircles(Object):
         return self
 
     def random_pos(self, display: Display) -> 'Dualcircles':
+        """ Randomize the position of the circles. """
+
         if self.fps_calculator:
             self.target_x = random.randint(0, display.width)
             self.target_x2 = random.randint(0, display.width)
@@ -78,6 +80,8 @@ class Dualcircles(Object):
             self.arc_vertices.clear()
 
     def tick_arc(self):
+        """ Calculates the overlapping arc between the two circles """
+
         a = self.x**2 - 2*self.x*self.x2 + self.x2**2 + self.y**2 - 2*self.y*self.y2 + self.y2**2
         b = -self.x**3 + self.x**2*self.x2 + self.x*self.x2**2 - self.x*self.y**2 + 2*self.x*self.y*self.y2 \
             - self.x*self.y2**2 - self.x2**3 - self.x2*self.y**2 + 2*self.x2*self.y*self.y2 - self.x2*self.y2**2

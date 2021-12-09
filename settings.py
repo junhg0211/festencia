@@ -12,12 +12,18 @@ _default = {
 
 
 def update(key, value):
+    """
+    Updates the settings file with the given key and value, and saves it to disk.
+    :param key: the key to update
+    :param value: the value to update the key with
+    """
     global settings
     settings[key] = value
     save()
 
 
 def save():
+    """ Saves the settings to disk. """
     with open('./res/settings.json', 'w', encoding='utf-8') as file_:
         dump(settings, file_)
 

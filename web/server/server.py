@@ -21,6 +21,7 @@ class Server:
         self.game = ServerGame(self)
 
     def announce(self, message: str):
+        """ Send a message to all clients """
         if self.host:
             self.host.send(message)
         if self.joiner:
@@ -29,6 +30,10 @@ class Server:
             spectator.send(message)
 
     def get_anchor_time(self):
+        """
+        Get the time and the anchor time. The anchor time is the time what used to check how long is the latency of the
+        connection.
+        """
         return time(), self.game.time_left
 
     def start(self):  # this runs in thread

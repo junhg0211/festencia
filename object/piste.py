@@ -10,6 +10,8 @@ from util import center, Face, linear
 
 
 class Click(Object):
+    """ Click indicator """
+
     DURATION = 2
 
     def __init__(self, x: int, y: int, color: tuple, intersection: list, time_: float, excludes: list):
@@ -31,6 +33,8 @@ class Click(Object):
 
 
 class Piste(Object):
+    """ Gameboard of the game. """
+
     WIDTH = 20
     HEIGHT = 11
     RADIUS = 1.8
@@ -90,6 +94,14 @@ class Piste(Object):
         self.clicks_excludes = list()
 
     def click(self, x: int, y: int, color: tuple) -> 'Piste':
+        """
+        Add a click to the piste.
+        :param x:
+        :param y:
+        :param color: color of the clicking player
+        :return: self
+        """
+
         now = time()
         self.clicks[now] = Click(x, y, color, self.dualcircles.arc_vertices.copy(), now, self.clicks_excludes)
         return self
@@ -107,6 +119,7 @@ class Piste(Object):
         return self
 
     def center_x(self, display: Display) -> 'Piste':
+        """ Center the piste on the display. """
         self.x = center(display.width, self.width)
         return self
 
@@ -116,11 +129,17 @@ class Piste(Object):
         self.announcement_x = center(self.display.width, self.announcement_surface.get_width())
         return self
 
-    def set_time_left(self, time_left) -> 'Piste':
+    def set_time_left(self, time_left: float) -> 'Piste':
+        """
+        Set the time left on the piste.
+        :param time_left: left time in seconds
+        :return:
+        """
         self.time_left = time_left
         return self.render_timer()
 
     def set_title(self, title: str) -> 'Piste':
+        """ Set the title of the piste. """
         self.title.set_text(title).center_x(self.display)
         return self
 

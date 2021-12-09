@@ -11,6 +11,8 @@ from util import Face, Spacer, center
 
 
 class Selection(State):
+    """ The state where the user can select an action. """
+
     GAP = 150
     PADDING = 50
 
@@ -23,7 +25,6 @@ class Selection(State):
                  mouse_manager: MouseManager, keyboard_manager: KeyboardManager, *args):
         """
         args: when mode is
-
         * ``title``, [shutdown: Callable]
         """
 

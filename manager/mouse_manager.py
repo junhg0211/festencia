@@ -6,6 +6,8 @@ from handler import Handler
 
 
 class MouseManager(Handler):
+    """ A class that handles mouse events. """
+
     def __init__(self):
         self.left = False
         self.right = False
@@ -22,6 +24,7 @@ class MouseManager(Handler):
         self.x, self.y = 0, 0
 
     def set_pos(self, x: float, y: float):
+        """ Sets the mouse position in the window. """
         mouse.set_pos(x, y)
         self.x = x
         self.y = y
@@ -51,6 +54,7 @@ class MouseManager(Handler):
             self.x, self.y = event.pos
 
     def tick(self):
+        """ Resets the mouse button states. Called every tick's last part. """
         self.left_start = False
         self.left_end = False
         self.middle_start = False

@@ -36,6 +36,8 @@ class Main:
                       keyboard_manager, self.shutdown))
 
     def shutdown(self):
+        """Called for program to be terminated"""
+
         self.running = False
         if 'server' in globals.data:
             globals.data['server'].shutdown()
@@ -44,6 +46,7 @@ class Main:
             Log.debug('HALTED')
 
     def handle(self):
+        """Handle events"""
         for event in event_get():
             self.handler_manager.handle(event)
             if event.type == KEYDOWN:

@@ -1,4 +1,4 @@
-from pygame import display, FULLSCREEN, image
+from pygame import display, image
 from pygame.surface import Surface
 
 

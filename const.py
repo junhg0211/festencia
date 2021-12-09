@@ -8,6 +8,11 @@ with open('./res/lang.json', 'r', encoding='utf-8') as file:
 
 
 def lang(path: str) -> str:
+    """
+    Get language string from json file.
+    :param path: path to language string devided by '.'
+    :return:
+    """
     value = _lang
     path = path.split('.')
     while path:

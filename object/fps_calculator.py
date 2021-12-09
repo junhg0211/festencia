@@ -5,6 +5,8 @@ from object import Object
 
 
 class FPSCalculator(Object):
+    """ A class to calculate the FPS of the game. """
+
     def __init__(self):
         super().__init__(0, 0)
 
