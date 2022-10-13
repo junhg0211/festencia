@@ -1,4 +1,3 @@
-from collections import Callable
 from typing import Optional
 
 from clipboard import paste
@@ -54,7 +53,7 @@ class Text(Object):
 class TextButton(Text):
     """ A text object that can be clicked. """
 
-    def __init__(self, text: str, face: Face, action: Callable, mouse_manager: MouseManager, x: int = 0, y: int = 0):
+    def __init__(self, text: str, face: Face, action, mouse_manager: MouseManager, x: int = 0, y: int = 0):
         super().__init__(text, face, x, y)
 
         self.action = action
@@ -75,7 +74,7 @@ class TextInserter(TextButton):
     """ A text object that can be clicked and typed into. """
 
     def __init__(self, text_template: str, face: Face, mouse_manager: MouseManager,
-                 keyboard_manager: KeyboardManager, default_text: str = '', ender: Optional[Callable] = None,
+                 keyboard_manager: KeyboardManager, default_text: str = '', ender = None,
                  x: int = 0, y: int = 0):
         super().__init__(text_template.format(default_text), face, self.insert, mouse_manager, x, y)
         self.ender = ender
